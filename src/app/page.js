@@ -48,17 +48,22 @@ export default function HomePage() {
   }, []);
 
   return (
-    // FIX: Aggiunte le classi flex e flex-col per gestire il footer
     <div className="container mx-auto p-4 max-w-7xl font-mono min-h-screen flex flex-col">
       
-      {/* FIX: Header semplificato con solo la ciambella centrata */}
-      <header className="w-full flex justify-center items-center min-h-48">
-        <DonutAsciiHeader />
+      <header className="w-full flex flex-col md:flex-row justify-between items-center py-4 md:min-h-32">
+        <div className="w-full md:w-1/4 flex justify-center md:justify-start">
+            <NervLogo />
+        </div>
+        <div className="w-full md:w-auto">
+            <DonutAsciiHeader />
+        </div>
+        <div className="w-full md:w-1/4 flex justify-center md:justify-end">
+            <SeeleLogo />
+        </div>
       </header>
 
-      {/* FIX: Aggiunta la classe flex-grow per spingere il footer in fondo */}
       <main className="flex-grow">
-          <p className="text-center -mt-6 mb-8">[ Piattaforma Recensioni ASCII System ]</p>
+          <p className="text-center mb-8">[ Piattaforma Recensioni ASCII System ]</p>
           
           <div className="max-w-4xl mx-auto">
             <CreateReviewForm />
@@ -105,15 +110,15 @@ export default function HomePage() {
             </div>
           </div>
       </main>
-
-      {/* FIX: Nuovo footer con i loghi NERV (sinistra) e SEELE (destra) */}
-      <footer className="w-full flex justify-between items-center py-8 mt-12 border-t-2 border-green-700 border-dashed">
-        <div>
+      
+      {/* FIX: Footer ora è una colonna su mobile (flex-col) e una riga su desktop (md:flex-row) */}
+      <footer className="w-full flex flex-col md:flex-row justify-between items-center py-8 mt-12 border-t-2 border-green-700 border-dashed space-y-8 md:space-y-0">
+         <div>
             <NervLogo />
-        </div>
-        <div>
+         </div>
+         <div>
             <SeeleLogo />
-        </div>
+         </div>
       </footer>
     </div>
   );
