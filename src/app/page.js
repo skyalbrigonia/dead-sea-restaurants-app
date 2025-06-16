@@ -6,17 +6,30 @@ import CreateReviewForm from '@/components/CreateReviewForm';
 import DonutAsciiHeader from '@/components/DonutAsciiHeader';
 import NervLogo from '@/components/NervLogo';
 import SeeleLogo from '@/components/SeeleLogo';
+// FIX: Importato il nuovo componente per i filtri
+import FilterControls from '@/components/FilterControls';
 
 export default function HomePage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  // FIX: Aggiunto un nuovo stato per tenere traccia del filtro attivo
+  const [activeFilter, setActiveFilter] = useState(null); // null = mostra tutte
 
-  async function fetchReviews() {
+  // FIX: La funzione ora accetta un filtro per la query a Supabase
+  async function fetchReviews(filter) {
+    setLoading(true);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('reviews')
         .select('*')
         .order('created_at', { ascending: false });
+
+      // Se un filtro è attivo, lo aggiunge alla query
+      if (filter !== null) {
+        query = query.eq('rating', filter);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       if (data) setReviews(data);
@@ -28,37 +41,49 @@ export default function HomePage() {
     }
   }
 
+  // FIX: Questo 'effect' viene eseguito ogni volta che l'utente cambia il filtro
   useEffect(() => {
-    fetchReviews();
+    fetchReviews(activeFilter);
+  }, [activeFilter]);
 
+  // FIX: Questo 'effect' gestisce gli aggiornamenti in tempo reale
+  useEffect(() => {
     const channel = supabase
       .channel('realtime reviews')
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'reviews' },
         (payload) => {
-          setReviews((currentReviews) => [payload.new, ...currentReviews]);
+          // Aggiunge la nuova recensione solo se corrisponde al filtro attivo
+          // o se non c'è nessun filtro attivo
+          if (activeFilter === null || payload.new.rating === activeFilter) {
+            setReviews((currentReviews) => [payload.new, ...currentReviews]);
+          }
         }
       )
       .subscribe();
 
+    // Funzione di cleanup
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+    // Esegui di nuovo se il filtro cambia, per aggiornare la sottoscrizione
+  }, [activeFilter]);
 
   return (
     <div className="container mx-auto p-4 max-w-7xl font-mono min-h-screen flex flex-col">
       
-      {/* FIX: Rimosso il padding verticale py-4 per ridurre lo spazio */}
-      <header className="w-full flex justify-center items-center">
+      <header className="w-full flex justify-center items-center min-h-32">
         <DonutAsciiHeader />
       </header>
 
       <main className="flex-grow">
-          <p className="text-center mb-8">[ Piattaforma Recensioni ASCII System ]</p>
+          <p className="text-center -mt-6 mb-8">[ Piattaforma Recensioni ASCII System ]</p>
           
           <div className="max-w-4xl mx-auto">
+            {/* FIX: Aggiunto il componente per i controlli del filtro */}
+            <FilterControls activeFilter={activeFilter} onFilterChange={setActiveFilter} />
+            
             <CreateReviewForm />
 
             <div className="mt-12">
@@ -96,7 +121,7 @@ export default function HomePage() {
                         </div>
                     ))
                   ) : (
-                    <p className="text-center">[ NESSUN LOG TROVATO. INSERIRE NUOVA RECENSIONE. ]</p>
+                    <p className="text-center">[ NESSUN RISULTATO TROVATO PER IL FILTRO SELEZIONATO. ]</p>
                   )}
                 </div>
               )}
@@ -104,7 +129,6 @@ export default function HomePage() {
           </div>
       </main>
       
-      {/* Footer con i loghi a sinistra e a destra, responsive. */}
       <footer className="w-full flex flex-col md:flex-row justify-between items-center py-8 mt-12 border-t-2 border-green-700 border-dashed space-y-8 md:space-y-0">
          <div>
             <NervLogo />
