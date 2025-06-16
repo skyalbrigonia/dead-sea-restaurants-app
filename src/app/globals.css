@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #0a0a0a;
+  color: #33ff33;
+  text-shadow: 0 0 5px rgba(51, 255, 51, 0.5);
+}
+
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+.blinking-cursor {
+  animation: blink-animation 1s steps(2, start) infinite;
+}
+
+input[type="text"], input[type="url"], input[type="number"], textarea, button {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #33ff33;
+    width: 100%;
+    text-shadow: 0 0 5px rgba(51, 255, 51, 0.5);
+}
+
+textarea {
+    resize: none;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  background: repeating-linear-gradient(90deg, #22c55e, #22c55e 2px, #15803d 2px, #15803d 4px);
+  height: 8px;
+}
+input[type='range']::-moz-range-track {
+  background: repeating-linear-gradient(90deg, #22c55e, #22c55e 2px, #15803d 2px, #15803d 4px);
+  height: 8px;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -8px;
+  background-color: #eab308;
+  height: 24px;
+  width: 12px;
+  border: 2px solid #fde047;
+}
+input[type='range']::-moz-range-thumb {
+  border: none;
+  border-radius: 0;
+  background-color: #eab308;
+  height: 24px;
+  width: 12px;
+  border: 2px solid #fde047;
+}
