@@ -70,3 +70,44 @@ Paste your anon public API key here
 Click "Deploy".
 
 In a few minutes, your application will be online! From now on, every git push to the main branch of your repository will automatically update the live site.
+
+3. (Optional) Connect a Custom Domain
+After deploying, you can replace the default .vercel.app URL with your own custom domain.
+
+Go to your Vercel Project Dashboard.
+
+Navigate to the "Settings" tab and then select "Domains".
+
+Enter your custom domain name (e.g., miodominio.com) and click "Add".
+
+Vercel will present you with configuration options. The recommended method is using Vercel's Nameservers.
+
+Method A: Using Vercel's Nameservers (Recommended)
+This method allows Vercel to manage your DNS records automatically, which is simpler and more reliable.
+
+Log in to the control panel of your domain provider (where you bought your domain, e.g., GoDaddy, Namecheap, Aruba, etc.).
+
+Find the DNS or Nameserver settings for your domain.
+
+Replace your provider's default nameservers with the ones provided by Vercel (they usually look like ns1.vercel-dns.com and ns2.vercel-dns.com).
+
+Save the changes. It may take up to 24 hours for the DNS changes to propagate, but it's often much faster. Vercel's dashboard will show you when the configuration is complete and valid.
+
+Method B: Using an A Record (Advanced)
+Use this method if you want to keep your DNS management with your current provider.
+
+In Vercel's domain settings, choose the "A Record" configuration option. Vercel will provide you with an IP address.
+
+Log in to your domain provider's control panel and find the DNS settings.
+
+Create a new A record:
+
+Type: A
+
+Name / Host: @ (this usually represents the root domain)
+
+Value / Points to: The IP address provided by Vercel.
+
+TTL: Leave it as default or set it to 1 hour.
+
+Save the changes. As with the other method, propagation can take some time. Once complete, your site will be live at your custom domain.
