@@ -50,15 +50,10 @@ export default function HomePage() {
   return (
     <div className="container mx-auto p-4 max-w-7xl font-mono min-h-screen flex flex-col">
       
-      <header className="w-full flex flex-col md:flex-row justify-between items-center py-4 md:min-h-32">
-        <div className="w-full md:w-1/4 flex justify-center md:justify-start">
-            <NervLogo />
-        </div>
-        <div className="w-full md:w-auto">
+      {/* FIX: Header ora contiene solo la ciambella, centrata. */}
+      <header className="w-full flex justify-center items-center py-4 md:min-h-32">
+        <div>
             <DonutAsciiHeader />
-        </div>
-        <div className="w-full md:w-1/4 flex justify-center md:justify-end">
-            <SeeleLogo />
         </div>
       </header>
 
@@ -111,7 +106,7 @@ export default function HomePage() {
           </div>
       </main>
       
-      {/* FIX: Footer ora è una colonna su mobile (flex-col) e una riga su desktop (md:flex-row) */}
+      {/* Footer con i loghi a sinistra e a destra, responsive. */}
       <footer className="w-full flex flex-col md:flex-row justify-between items-center py-8 mt-12 border-t-2 border-green-700 border-dashed space-y-8 md:space-y-0">
          <div>
             <NervLogo />
