@@ -50,8 +50,8 @@ export default function HomePage() {
   return (
     <div className="container mx-auto p-4 max-w-7xl font-mono min-h-screen flex flex-col">
       
-      {/* FIX: Rimosso min-h-32 per ridurre l'altezza dell'header su desktop */}
-      <header className="w-full flex justify-center items-center py-4">
+      {/* FIX: Rimosso il padding verticale py-4 per ridurre lo spazio */}
+      <header className="w-full flex justify-center items-center">
         <DonutAsciiHeader />
       </header>
 
