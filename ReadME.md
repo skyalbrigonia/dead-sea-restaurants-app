@@ -1,36 +1,39 @@
-ASCII Art Restaurant Reviews (P.R.A.S.)
+# ASCII Art Restaurant Reviews (P.R.A.S.)
+
 A web application for sharing restaurant reviews, featuring a unique terminal/ASCII art aesthetic and real-time updates. Inspired by cyberpunk and science fiction themes, the application is built with a modern tech stack and optimized for simple, immediate deployment.
 
-Main Features
-Real-Time Updates: New reviews appear instantly for all connected users without needing a page refresh, thanks to Supabase's real-time subscriptions.
+## Main Features
 
-Unique ASCII Art Interface: A fully customized user experience with a terminal aesthetic, enriched by a header with ASCII animations (3D donut, NERV, and SEELE logos).
+- **Real-Time Updates**: New reviews appear instantly for all connected users without needing a page refresh, thanks to Supabase's real-time subscriptions.
 
-Fast and Optimized: Built with Next.js to ensure a responsive, high-performance, and modern user experience.
+- **Unique ASCII Art Interface**: A fully customized user experience with a terminal aesthetic, enriched by a header with ASCII animations (3D donut, NERV, and SEELE logos).
 
-Serverless Backend: The project relies on Supabase, which provides a managed PostgreSQL database, instant APIs, and a robust authentication system, eliminating the need to manage a server.
+- **Fast and Optimized**: Built with Next.js to ensure a responsive, high-performance, and modern user experience.
 
-Continuous Deployment: Configured for simple and automated deployment via Vercel, directly linked to GitHub.
+- **Serverless Backend**: The project relies on Supabase, which provides a managed PostgreSQL database, instant APIs, and a robust authentication system, eliminating the need to manage a server.
 
-Tech Stack
-Frontend: Next.js (React Framework)
+- **Continuous Deployment**: Configured for simple and automated deployment via Vercel, directly linked to GitHub.
 
-Styling: Tailwind CSS
+## Tech Stack
 
-Backend & Database: Supabase (PostgreSQL, API, Real-time)
+- **Frontend**: Next.js (React Framework)
+- **Styling**: Tailwind CSS
+- **Backend & Database**: Supabase (PostgreSQL, API, Real-time)
+- **Deployment**: Vercel
 
-Deployment: Vercel
+## Getting Started and Deployment
 
-Getting Started and Deployment
 This project is configured for immediate deployment on Vercel. Follow these steps.
 
-1. Set Up Your Supabase Project
-Sign up on supabase.com and create a new project (the free plan is perfect to get started).
+### 1. Set Up Your Supabase Project
 
-Once in the dashboard, go to the "SQL Editor" (icon <>).
+1. Sign up on [supabase.com](https://supabase.com) and create a new project (the free plan is perfect to get started).
 
-Copy and paste the following SQL script to create the reviews table and click "RUN":
+2. Once in the dashboard, go to the "SQL Editor" (icon `</>`).
 
+3. Copy and paste the following SQL script to create the reviews table and click "RUN":
+
+```sql
 -- Create the reviews table
 CREATE TABLE reviews (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -43,71 +46,70 @@ CREATE TABLE reviews (
 
 -- Enable real-time updates for the 'reviews' table
 ALTER PUBLICATION supabase_realtime ADD TABLE reviews;
+```
 
-Go to Project Settings -> API. Here you will find your credentials. Copy the project URL and the anon public API key.
+4. Go to **Project Settings** → **API**. Here you will find your credentials. Copy the project URL and the anon public API key.
 
-2. Deploy to Vercel
-Create a "fork" of this repository on your GitHub account or upload your frontend folder to a new repository.
+### 2. Deploy to Vercel
 
-Go to vercel.com and sign up using your GitHub account.
+1. Create a "fork" of this repository on your GitHub account or upload your frontend folder to a new repository.
 
-From your Vercel dashboard, click "Add New... -> Project" and import the repository you just created.
+2. Go to [vercel.com](https://vercel.com) and sign up using your GitHub account.
 
-Vercel will automatically recognize that it is a Next.js project. Before deploying, expand the "Environment Variables" section. Here you must enter your Supabase keys to allow the site to connect to the database:
+3. From your Vercel dashboard, click **"Add New... → Project"** and import the repository you just created.
 
-Variable Name
+4. Vercel will automatically recognize that it is a Next.js project. Before deploying, expand the **"Environment Variables"** section. Here you must enter your Supabase keys to allow the site to connect to the database:
 
-Value
+| Variable Name | Value |
+|---------------|-------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Paste your Supabase project URL here |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Paste your anon public API key here |
 
-NEXT_PUBLIC_SUPABASE_URL
-
-Paste your Supabase project URL here
-
-NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-Paste your anon public API key here
-
-Click "Deploy".
+5. Click **"Deploy"**.
 
 In a few minutes, your application will be online! From now on, every git push to the main branch of your repository will automatically update the live site.
 
-3. (Optional) Connect a Custom Domain
-After deploying, you can replace the default .vercel.app URL with your own custom domain.
+### 3. (Optional) Connect a Custom Domain
 
-Go to your Vercel Project Dashboard.
+After deploying, you can replace the default `.vercel.app` URL with your own custom domain.
 
-Navigate to the "Settings" tab and then select "Domains".
+1. Go to your Vercel Project Dashboard.
+2. Navigate to the **"Settings"** tab and then select **"Domains"**.
+3. Enter your custom domain name (e.g., `miodominio.com`) and click **"Add"**.
+4. Vercel will present you with configuration options. The recommended method is using Vercel's Nameservers.
 
-Enter your custom domain name (e.g., miodominio.com) and click "Add".
+#### Method A: Using Vercel's Nameservers (Recommended)
 
-Vercel will present you with configuration options. The recommended method is using Vercel's Nameservers.
-
-Method A: Using Vercel's Nameservers (Recommended)
 This method allows Vercel to manage your DNS records automatically, which is simpler and more reliable.
 
-Log in to the control panel of your domain provider (where you bought your domain, e.g., GoDaddy, Namecheap, Aruba, etc.).
+1. Log in to the control panel of your domain provider (where you bought your domain, e.g., GoDaddy, Namecheap, Aruba, etc.).
 
-Find the DNS or Nameserver settings for your domain.
+2. Find the DNS or Nameserver settings for your domain.
 
-Replace your provider's default nameservers with the ones provided by Vercel (they usually look like ns1.vercel-dns.com and ns2.vercel-dns.com).
+3. Replace your provider's default nameservers with the ones provided by Vercel (they usually look like `ns1.vercel-dns.com` and `ns2.vercel-dns.com`).
 
-Save the changes. It may take up to 24 hours for the DNS changes to propagate, but it's often much faster. Vercel's dashboard will show you when the configuration is complete and valid.
+4. Save the changes. It may take up to 24 hours for the DNS changes to propagate, but it's often much faster. Vercel's dashboard will show you when the configuration is complete and valid.
 
-Method B: Using an A Record (Advanced)
+#### Method B: Using an A Record (Advanced)
+
 Use this method if you want to keep your DNS management with your current provider.
 
-In Vercel's domain settings, choose the "A Record" configuration option. Vercel will provide you with an IP address.
+1. In Vercel's domain settings, choose the **"A Record"** configuration option. Vercel will provide you with an IP address.
 
-Log in to your domain provider's control panel and find the DNS settings.
+2. Log in to your domain provider's control panel and find the DNS settings.
 
-Create a new A record:
+3. Create a new A record:
+   - **Type**: A
+   - **Name / Host**: `@` (this usually represents the root domain)
+   - **Value / Points to**: The IP address provided by Vercel
+   - **TTL**: Leave it as default or set it to 1 hour
 
-Type: A
+4. Save the changes. As with the other method, propagation can take some time. Once complete, your site will be live at your custom domain.
 
-Name / Host: @ (this usually represents the root domain)
+## Contributing
 
-Value / Points to: The IP address provided by Vercel.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-TTL: Leave it as default or set it to 1 hour.
+## License
 
-Save the changes. As with the other method, propagation can take some time. Once complete, your site will be live at your custom domain.
+This project is open source and available under the [MIT License](LICENSE).
