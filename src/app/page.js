@@ -6,16 +6,13 @@ import CreateReviewForm from '@/components/CreateReviewForm';
 import DonutAsciiHeader from '@/components/DonutAsciiHeader';
 import NervLogo from '@/components/NervLogo';
 import SeeleLogo from '@/components/SeeleLogo';
-// FIX: Importato il nuovo componente per i filtri
 import FilterControls from '@/components/FilterControls';
 
 export default function HomePage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  // FIX: Aggiunto un nuovo stato per tenere traccia del filtro attivo
-  const [activeFilter, setActiveFilter] = useState(null); // null = mostra tutte
+  const [activeFilter, setActiveFilter] = useState(null);
 
-  // FIX: La funzione ora accetta un filtro per la query a Supabase
   async function fetchReviews(filter) {
     setLoading(true);
     try {
@@ -24,7 +21,6 @@ export default function HomePage() {
         .select('*')
         .order('created_at', { ascending: false });
 
-      // Se un filtro è attivo, lo aggiunge alla query
       if (filter !== null) {
         query = query.eq('rating', filter);
       }
@@ -41,12 +37,10 @@ export default function HomePage() {
     }
   }
 
-  // FIX: Questo 'effect' viene eseguito ogni volta che l'utente cambia il filtro
   useEffect(() => {
     fetchReviews(activeFilter);
   }, [activeFilter]);
 
-  // FIX: Questo 'effect' gestisce gli aggiornamenti in tempo reale
   useEffect(() => {
     const channel = supabase
       .channel('realtime reviews')
@@ -54,8 +48,6 @@ export default function HomePage() {
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'reviews' },
         (payload) => {
-          // Aggiunge la nuova recensione solo se corrisponde al filtro attivo
-          // o se non c'è nessun filtro attivo
           if (activeFilter === null || payload.new.rating === activeFilter) {
             setReviews((currentReviews) => [payload.new, ...currentReviews]);
           }
@@ -63,11 +55,9 @@ export default function HomePage() {
       )
       .subscribe();
 
-    // Funzione di cleanup
     return () => {
       supabase.removeChannel(channel);
     };
-    // Esegui di nuovo se il filtro cambia, per aggiornare la sottoscrizione
   }, [activeFilter]);
 
   return (
@@ -81,12 +71,12 @@ export default function HomePage() {
           <p className="text-center -mt-6 mb-8">[ Piattaforma Recensioni ASCII System ]</p>
           
           <div className="max-w-4xl mx-auto">
-            {/* FIX: Aggiunto il componente per i controlli del filtro */}
-            <FilterControls activeFilter={activeFilter} onFilterChange={setActiveFilter} />
-            
             <CreateReviewForm />
 
             <div className="mt-12">
+              {/* FIX: Spostato il componente per i filtri qui, prima della lista */}
+              <FilterControls activeFilter={activeFilter} onFilterChange={setActiveFilter} />
+
               <p className="mb-4 text-xl">[ LOG RECENSIONI PRECEDENTI ]</p>
               {loading ? (
                 <p className="text-center animate-pulse">[ CARICAMENTO DATI DAL SERVER... ]</p>
