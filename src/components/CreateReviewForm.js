@@ -16,24 +16,17 @@ export default function CreateReviewForm() {
     setIsSubmitting(true);
     setError('');
     setSuccess('');
-
     try {
       const data = {
-        "restaurant_name": restaurantName,
-        "review_text": reviewText,
-        "rating": Number(rating),
-        "maps_link": mapsLink,
+        "restaurant_name": restaurantName, "review_text": reviewText,
+        "rating": Number(rating), "maps_link": mapsLink,
       };
       await supabase.from('reviews').insert([data]);
-      setRestaurantName('');
-      setReviewText('');
-      setRating(3);
-      setMapsLink('');
-      setSuccess('LOG ADDED');
+      setRestaurantName(''); setReviewText(''); setRating(3); setMapsLink('');
+      setSuccess('LOG INSERITO CORRETTAMENTE');
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError('TRANSMISSION FAILED');
-      console.error(err);
+      setError('TRASMISSIONE DATI FALLITA'); console.error(err);
     } finally {
       setIsSubmitting(false);
     }
@@ -41,62 +34,55 @@ export default function CreateReviewForm() {
 
   const handleRatingChange = (e) => {
     let value = e.target.value;
-    if (value === '') {
-        setRating('');
-        return;
-    }
+    if (value === '') { setRating(''); return; }
     let numValue = parseInt(value, 10);
-    if (numValue > 5) numValue = 5;
-    if (numValue < 1) numValue = 1;
+    if (numValue > 5) numValue = 5; if (numValue < 1) numValue = 1;
     setRating(numValue);
   };
 
-
-  const AsciiSubmitButton = ({ disabled }) => (
-    <button type="submit" disabled={disabled} className="w-full mt-4 text-lg group bg-transparent border-none">
-        <pre className={'text-center p-2 border-2 border-green-500 group-hover:bg-green-500 group-hover:text-black group-disabled:border-gray-500 group-disabled:text-gray-500'}>
-{`+================================+
-|    CLICK HERE TO SUBMIT      |
-+================================+`}
-        </pre>
+  // FIX: Sostituito il pulsante <pre> con un bottone standard più robusto e responsive
+  const SubmitButton = ({ disabled }) => (
+    <button type="submit" disabled={disabled} className="w-full mt-4 p-3 text-lg border-2 border-green-500 hover:bg-green-500 hover:text-black disabled:border-gray-500 disabled:text-gray-500">
+        [ CLICK HERE TO SUBMIT ]
     </button>
   );
 
   return (
     <div className="border-2 border-green-500 p-4 mb-8 shadow-[0_0_15px_rgba(51,255,51,0.5)]">
-      <p className="text-2xl mb-4">[ NEW LOG ENTRY ]</p>
+      <p className="text-2xl mb-4">[ NUOVO INSERIMENTO LOG ]</p>
       <form onSubmit={handleSubmit} className="space-y-4 text-lg">
         <div className="border border-green-500 p-2">
-            <label htmlFor="restaurant" className="block text-yellow-400">RESTAURANT_NAME:</label>
+            <label htmlFor="restaurant" className="block text-yellow-400">NOME_RISTORANTE:</label>
+            {/* FIX: L'input ora riempie lo spazio disponibile */}
             <div className="flex items-center">
                 <span className="mr-2">{'>'}</span>
-                <input id="restaurant" type="text" value={restaurantName} onChange={(e) => setRestaurantName(e.target.value)} required />
+                <input id="restaurant" type="text" value={restaurantName} onChange={(e) => setRestaurantName(e.target.value)} required className="flex-grow"/>
             </div>
         </div>
         <div className="border border-green-500 p-2">
-            <label htmlFor="review" className="block text-yellow-400">REVIEW_TXT:</label>
+            <label htmlFor="review" className="block text-yellow-400">RECENSIONE_TXT:</label>
             <div className="flex items-start">
                 <span className="mr-2">{'>'}</span>
-                <textarea id="review" value={reviewText} onChange={(e) => setReviewText(e.target.value)} rows={3} required />
+                <textarea id="review" value={reviewText} onChange={(e) => setReviewText(e.target.value)} rows={3} required className="flex-grow"/>
             </div>
         </div>
         <div className="border border-green-500 p-2">
             <label htmlFor="maps" className="block text-yellow-400">LINK_MAPS (Opzionale):</label>
             <div className="flex items-center">
                 <span className="mr-2">{'>'}</span>
-                <input id="maps" type="url" value={mapsLink} onChange={(e) => setMapsLink(e.target.value)} placeholder="https://maps.app.goo.gl/..." />
+                <input id="maps" type="url" value={mapsLink} onChange={(e) => setMapsLink(e.target.value)} placeholder="https://maps.app.goo.gl/..." className="flex-grow"/>
             </div>
         </div>
         <div className="border border-green-500 p-2">
-          <label htmlFor="rating" className="block text-yellow-400">VOTE [1-5]:</label>
+          <label htmlFor="rating" className="block text-yellow-400">VOTO [1-5]:</label>
           <div className="flex items-center">
               <span className="mr-2">{'>'}</span>
               <input id="rating" type="number" value={rating} onChange={handleRatingChange} required className="w-auto" />
           </div>
         </div>
-        {error && <p className="text-red-500 text-shadow-none">[ ERROR: {error} ]</p>}
-        {success && <p className="text-yellow-400 animate-pulse text-shadow-none">[ SUCCESS: {success} ]</p>}
-        <AsciiSubmitButton disabled={isSubmitting} />
+        {error && <p className="text-red-500 text-shadow-none">[ ERRORE: {error} ]</p>}
+        {success && <p className="text-yellow-400 animate-pulse text-shadow-none">[ SUCCESSO: {success} ]</p>}
+        <SubmitButton disabled={isSubmitting} />
       </form>
     </div>
   );

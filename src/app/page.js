@@ -50,9 +50,15 @@ export default function HomePage() {
   return (
     <div className="container mx-auto p-4 max-w-7xl font-mono min-h-screen flex flex-col">
       
-      {/* FIX: Header ora contiene solo la ciambella, centrata. */}
-      <header className="w-full flex justify-center items-center py-4 md:min-h-32">
-        <div>
+      {/* FIX: Header ora è una colonna su mobile e una riga su desktop (md:) */}
+      <header className="w-full flex flex-col md:flex-row justify-between items-center py-4 md:min-h-32">
+        {/* Colonna Sinistra per il logo NERV */}
+        <div className="w-full md:w-1/4 flex justify-center md:justify-start">
+            <NervLogo />
+        </div>
+        
+        {/* Colonna Centrale per la ciambella */}
+        <div className="w-full md:w-auto">
             <DonutAsciiHeader />
         </div>
       </header>
@@ -72,11 +78,12 @@ export default function HomePage() {
                   {reviews.length > 0 ? (
                     reviews.map((review) => (
                         <div key={review.id} className="border-2 border-green-500 p-4 shadow-[0_0_15px_rgba(51,255,51,0.5)]">
-                            <div className="flex justify-between items-start border-b-2 border-green-500 border-dashed pb-2 mb-2">
-                                <p className="text-2xl">{`> ${review.restaurant_name}`}</p>
-                                <p className="text-sm">{new Date(review.created_at).toLocaleDateString('it-IT')}</p>
+                            {/* FIX: Header della card responsive */}
+                            <div className="flex flex-col md:flex-row justify-between items-start border-b-2 border-green-500 border-dashed pb-2 mb-2">
+                                <p className="text-2xl break-words">{`> ${review.restaurant_name}`}</p>
+                                <p className="text-sm mt-2 md:mt-0">{new Date(review.created_at).toLocaleDateString('it-IT')}</p>
                             </div>
-                            <p className="my-3 text-lg before:content-['MSG:__']">{review.review_text}</p>
+                            <p className="my-3 text-lg break-words before:content-['MSG:__']">{review.review_text}</p>
                             
                             {review.maps_link && (
                                 <div className="my-3">
@@ -106,7 +113,7 @@ export default function HomePage() {
           </div>
       </main>
       
-      {/* Footer con i loghi a sinistra e a destra, responsive. */}
+      {/* FIX: Footer responsive */}
       <footer className="w-full flex flex-col md:flex-row justify-between items-center py-8 mt-12 border-t-2 border-green-700 border-dashed space-y-8 md:space-y-0">
          <div>
             <NervLogo />
