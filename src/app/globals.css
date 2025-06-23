@@ -3,56 +3,43 @@
 @tailwind utilities;
 
 /* ======================
-   CRT EFFECT STYLES - Original balanced version
+   ALEC LOWNES CRT EFFECT - Faithful & Optimized
    ====================== */
 
-/* Simplified CRT Monitor Frame */
+/* Monitor Frame - Minimal */
 .crt-container {
   position: relative;
-  padding: 40px;
-  background: #2a2a2a;
-  border-radius: 20px;
-  border: 3px solid #333333;
-  box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.8),
-    inset 0 0 20px rgba(255, 255, 255, 0.05);
+  padding: 30px;
+  background: #222;
+  border-radius: 15px;
+  border: 2px solid #333;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
 }
 
-/* Simplified Monitor Bezel */
 .crt-container::before {
   content: '';
   position: absolute;
-  top: 20px;
-  left: 20px;
-  right: 20px;
-  bottom: 20px;
-  background: #1a1a1a;
-  border-radius: 12px;
-  border: 1px solid #333333;
-  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+  background: #111;
+  border-radius: 8px;
+  border: 1px solid #333;
 }
 
-/* Simplified screen effect */
-.crt-screen {
+/* CRT Effect - Exact Alec Lownes Implementation */
+.crt {
   position: relative;
-  z-index: 5;
-  filter: contrast(1.05) brightness(1.1);
-  border-radius: 8px;
+  background: #000;
+  border-radius: 5px;
   overflow: hidden;
-  background: #000000;
-  
-  /* Optimized CRT text shadow effect */
+  /* Text shadow animation applied to the container */
   animation: textShadow 1.6s infinite;
 }
 
-/* Content inside screen should be above effects */
-.crt-screen .container {
-  position: relative;
-  z-index: 10;
-}
-
-/* Optimized screen-door effect (scanlines + RGB separation) */
-.crt-screen::before {
+/* Screen-Door Effect - Exact from Alec Lownes */
+.crt::before {
   content: " ";
   display: block;
   position: absolute;
@@ -61,16 +48,15 @@
   bottom: 0;
   right: 0;
   background: 
-    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
     linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  z-index: 1;
+  z-index: 2;
   background-size: 100% 2px, 3px 100%;
   pointer-events: none;
-  border-radius: 8px;
 }
 
-/* Optimized flicker effect */
-.crt-screen::after {
+/* Flicker Effect - Exact from Alec Lownes */
+.crt::after {
   content: " ";
   display: block;
   position: absolute;
@@ -80,31 +66,35 @@
   right: 0;
   background: rgba(18, 16, 16, 0.1);
   opacity: 0;
-  z-index: 1;
+  z-index: 2;
   pointer-events: none;
   animation: flicker 0.15s infinite;
-  border-radius: 8px;
 }
 
-/* Screen glow - kept but simplified */
-.crt-glow {
+/* Content should be above effects */
+.crt .container {
+  position: relative;
+  z-index: 3;
+}
+
+/* Power LED - Simple */
+.crt-container .power-led {
   position: absolute;
-  top: -10px;
-  left: -10px;
-  right: -10px;
-  bottom: -10px;
-  background: radial-gradient(ellipse at center, rgba(51, 255, 51, 0.1) 0%, transparent 70%);
-  pointer-events: none;
-  animation: glow 2s ease-in-out infinite alternate;
-  z-index: 0;
-  border-radius: 12px;
+  bottom: 10px;
+  left: 10px;
+  width: 4px;
+  height: 4px;
+  background: #0f0;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #0f0;
+  animation: powerLed 3s ease-in-out infinite alternate;
 }
 
 /* ========================
-   OPTIMIZED CRT ANIMATIONS
+   EXACT ALEC LOWNES ANIMATIONS
    ======================== */
 
-/* Optimized flicker animation with better performance */
+/* Flicker animation - Exact copy */
 @keyframes flicker {
   0% { opacity: 0.27861; }
   5% { opacity: 0.34769; }
@@ -129,7 +119,7 @@
   100% { opacity: 0.24387; }
 }
 
-/* Color separation text shadow animation */
+/* Text shadow animation - Exact copy */
 @keyframes textShadow {
   0% { text-shadow: 0.4389924193300864px 0 1px rgba(0,30,255,0.5), -0.4389924193300864px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
   5% { text-shadow: 2.7928974010788217px 0 1px rgba(0,30,255,0.5), -2.7928974010788217px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
@@ -154,114 +144,60 @@
   100% { text-shadow: 2.6208764473832513px 0 1px rgba(0,30,255,0.5), -2.6208764473832513px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
 }
 
-@keyframes glow {
-  0% { opacity: 0.8; }
-  100% { opacity: 0.4; }
-}
-
-
-
-/* Monitor decorative elements */
-.crt-container .monitor-brand {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  color: rgba(51, 255, 51, 0.4);
-  font-size: 10px;
-  font-weight: bold;
-  letter-spacing: 1px;
-  z-index: 20;
-  font-family: monospace;
-  text-shadow: 0 0 5px rgba(51, 255, 51, 0.3);
-}
-
-.crt-container .power-led {
-  position: absolute;
-  bottom: 15px;
-  left: 15px;
-  width: 6px;
-  height: 6px;
-  background: #00ff00;
-  border-radius: 50%;
-  box-shadow: 
-    0 0 8px #00ff00,
-    0 0 16px #00ff00,
-    0 0 24px #00ff00;
-  animation: powerLed 2s ease-in-out infinite alternate;
-  z-index: 15;
-}
-
 @keyframes powerLed {
   0% { opacity: 0.8; }
   100% { opacity: 1; }
 }
 
-/* CRT Toggle States */
+/* ========================
+   CRT TOGGLE STATES
+   ======================== */
+
 .crt-disabled .crt-container {
   padding: 20px;
   background: #1a1a1a;
-  border-radius: 5px;
-  border: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid #333;
 }
 
 .crt-disabled .crt-container::before {
   display: none;
 }
 
-.crt-disabled .crt-glow {
-  display: none;
-}
-
-.crt-disabled .crt-screen {
-  filter: none;
+.crt-disabled .crt {
   animation: none;
-  background: transparent;
-  border-radius: 0;
 }
 
-.crt-disabled .crt-screen::before,
-.crt-disabled .crt-screen::after {
+.crt-disabled .crt::before,
+.crt-disabled .crt::after {
   display: none;
 }
 
 .crt-disabled .power-led {
-  background: #333333;
+  background: #333;
   box-shadow: none;
   animation: none;
 }
 
-/* ======================
-   ORIGINAL STYLES 
-   ====================== */
+/* ========================
+   BASE STYLES
+   ======================== */
 
 body {
-  background-color: #0a0a0a;
-  color: #33ff33;
-  text-shadow: 0 0 5px rgba(51, 255, 51, 0.5);
-  overflow-x: hidden; /* Prevent horizontal scroll from CRT effects */
-}
-
-@keyframes blink-animation {
-  to {
-    visibility: hidden;
-  }
-}
-.blinking-cursor {
-  animation: blink-animation 1s steps(2, start) infinite;
+  background-color: #000;
+  color: #0f0;
+  font-family: 'Courier New', monospace;
 }
 
 input[type="text"], input[type="url"], input[type="number"], textarea, button {
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #33ff33;
-    width: 100%;
-    text-shadow: 0 0 5px rgba(51, 255, 51, 0.5);
+  background-color: transparent;
+  color: #0f0;
+  border: 1px solid #0f0;
+  padding: 8px;
+  font-family: 'Courier New', monospace;
 }
 
 textarea {
-    resize: none;
+  resize: vertical;
 }
 
 input[type=number]::-webkit-inner-spin-button, 
@@ -274,37 +210,18 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-input[type='range'] {
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-  cursor: pointer;
-  width: 100%;
-}
+/* ========================
+   ACCESSIBILITY
+   ======================== */
 
-input[type='range']::-webkit-slider-runnable-track {
-  background: repeating-linear-gradient(90deg, #22c55e, #22c55e 2px, #15803d 2px, #15803d 4px);
-  height: 8px;
-}
-input[type='range']::-moz-range-track {
-  background: repeating-linear-gradient(90deg, #22c55e, #22c55e 2px, #15803d 2px, #15803d 4px);
-  height: 8px;
-}
-
-input[type='range']::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  margin-top: -8px;
-  background-color: #eab308;
-  height: 24px;
-  width: 12px;
-  border: 2px solid #fde047;
-}
-input[type='range']::-moz-range-thumb {
-  border: none;
-  border-radius: 0;
-  background-color: #eab308;
-  height: 24px;
-  width: 12px;
-  border: 2px solid #fde047;
+@media (prefers-reduced-motion: reduce) {
+  .crt,
+  .power-led,
+  .crt::after {
+    animation: none !important;
+  }
+  
+  .crt::before {
+    opacity: 0.3;
+  }
 }

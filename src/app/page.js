@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import CreateReviewForm from '@/components/CreateReviewForm';
 import FilterControls from '@/components/FilterControls';
@@ -12,7 +12,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState(null);
 
-  async function fetchReviews(filter) {
+  const fetchReviews = useCallback(async (filter) => {
     setLoading(true);
     try {
       let query = supabase
@@ -34,43 +34,58 @@ export default function HomePage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     fetchReviews(activeFilter);
-  }, [activeFilter]);
+  }, [activeFilter, fetchReviews]);
 
   // Function to handle new review addition
-  const handleNewReview = (newReview) => {
+  const handleNewReview = useCallback((newReview) => {
     if (activeFilter === null || newReview.rating === activeFilter) {
       setReviews((currentReviews) => [newReview, ...currentReviews]);
     }
-  };
+  }, [activeFilter]);
 
   useEffect(() => {
-    const channel = supabase
-      .channel('realtime reviews')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'reviews' },
-        (payload) => {
-          console.log('New review received:', payload.new);
-          handleNewReview(payload.new);
-        }
-      )
-      .subscribe();
+    let channel = null;
+    
+    try {
+      channel = supabase
+        .channel(`realtime-reviews-${Date.now()}`)
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'reviews' },
+          (payload) => {
+            console.log('New review received:', payload.new);
+            handleNewReview(payload.new);
+          }
+        )
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('Successfully subscribed to realtime reviews');
+          }
+        });
+    } catch (error) {
+      console.error('Error setting up realtime subscription:', error);
+    }
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) {
+        supabase.removeChannel(channel).then(() => {
+          console.log('Channel cleanup completed');
+        }).catch((error) => {
+          console.error('Error during channel cleanup:', error);
+        });
+      }
     };
-  }, [activeFilter]);
+  }, [handleNewReview]);
 
   return (
     <div className="crt-container min-h-screen">
       <CRTToggle />
       <div className="power-led"></div>
-      <div className="crt-screen">
-        <div className="crt-glow"></div>
+      <div className="crt">
         <div className="container mx-auto p-4 max-w-7xl font-mono min-h-screen flex flex-col">
       
       <header className="w-full text-center py-8">
@@ -84,7 +99,6 @@ export default function HomePage() {
             <CreateReviewForm onNewReview={handleNewReview} />
 
             <div className="mt-12">
-              {/* FIX: Spostato il componente per i filtri qui, prima della lista */}
               <FilterControls activeFilter={activeFilter} onFilterChange={setActiveFilter} />
 
               <p className="mb-4 text-xl">[ LOG RECENSIONI PRECEDENTI ]</p>

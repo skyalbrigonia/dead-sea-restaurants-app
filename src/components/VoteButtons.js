@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
 const VoteButtons = ({ reviewId }) => {
@@ -8,7 +8,7 @@ const VoteButtons = ({ reviewId }) => {
   const [loading, setLoading] = useState(false);
 
   // Ottieni l'IP dell'utente (semplificato - in produzione useresti un sistema di auth più robusto)
-  const getUserIP = async () => {
+  const getUserIP = useCallback(async () => {
     try {
       const response = await fetch('https://api.ipify.org?format=json');
       const data = await response.json();
@@ -17,14 +17,14 @@ const VoteButtons = ({ reviewId }) => {
       console.error('Errore nel recupero IP:', error);
       return `anonymous_${Date.now()}`; // Fallback
     }
-  };
+  }, []);
 
   // Carica i voti esistenti
-  const fetchVotes = async () => {
+  const fetchVotes = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('review_votes')
-        .select('vote_type')
+        .select('vote_type, user_ip')
         .eq('review_id', reviewId);
 
       if (error) throw error;
@@ -42,10 +42,10 @@ const VoteButtons = ({ reviewId }) => {
     } catch (error) {
       console.error('Errore nel caricamento voti:', error);
     }
-  };
+  }, [reviewId, getUserIP]);
 
   // Gestisce il voto
-  const handleVote = async (voteType) => {
+  const handleVote = useCallback(async (voteType) => {
     if (loading) return;
     
     setLoading(true);
@@ -91,32 +91,49 @@ const VoteButtons = ({ reviewId }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [loading, userVote, reviewId, getUserIP, fetchVotes]);
 
   useEffect(() => {
     fetchVotes();
 
-    // Real-time updates per i voti
-    const channel = supabase
-      .channel(`votes-${reviewId}`)
-      .on(
-        'postgres_changes',
-        { 
-          event: '*', 
-          schema: 'public', 
-          table: 'review_votes',
-          filter: `review_id=eq.${reviewId}`
-        },
-        () => {
-          fetchVotes(); // Ricarica i voti quando cambiano
-        }
-      )
-      .subscribe();
+    let channel = null;
+    
+    try {
+      // Real-time updates per i voti
+      channel = supabase
+        .channel(`votes-${reviewId}-${Date.now()}`)
+        .on(
+          'postgres_changes',
+          { 
+            event: '*', 
+            schema: 'public', 
+            table: 'review_votes',
+            filter: `review_id=eq.${reviewId}`
+          },
+          (payload) => {
+            console.log('Vote change detected:', payload);
+            fetchVotes(); // Ricarica i voti quando cambiano
+          }
+        )
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log(`Successfully subscribed to votes for review ${reviewId}`);
+          }
+        });
+    } catch (error) {
+      console.error('Error setting up votes subscription:', error);
+    }
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) {
+        supabase.removeChannel(channel).then(() => {
+          console.log(`Votes channel cleanup completed for review ${reviewId}`);
+        }).catch((error) => {
+          console.error('Error during votes channel cleanup:', error);
+        });
+      }
     };
-  }, [reviewId]);
+  }, [reviewId, fetchVotes]);
 
   const VoteButton = ({ type, count, isActive, icon }) => (
     <button
@@ -127,6 +144,7 @@ const VoteButtons = ({ reviewId }) => {
           ? 'border-yellow-400 bg-yellow-400 text-black' 
           : 'border-green-500 hover:border-yellow-400 hover:bg-yellow-400 hover:text-black'
       } disabled:opacity-50`}
+      aria-label={`${type === 'upvote' ? 'Vota positivo' : 'Vota negativo'}: ${count} voti`}
     >
       <span className="text-sm">{icon}</span>
       <span className="font-mono">{count}</span>
