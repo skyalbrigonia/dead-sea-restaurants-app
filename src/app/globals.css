@@ -25,7 +25,7 @@
   left: 0;
   bottom: 0;
   right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
   z-index: 2;
   background-size: 100% 2px, 3px 100%;
   pointer-events: none;
@@ -59,8 +59,8 @@
     0deg,
     transparent,
     transparent 2px,
-    rgba(0, 0, 0, 0.1) 2px,
-    rgba(0, 0, 0, 0.1) 4px
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
   );
 }
 
@@ -72,11 +72,11 @@
   height: 100%;
   z-index: 1000;
   pointer-events: none;
-  opacity: 0.75;
+  opacity: 0.03;
   background-image: 
-    radial-gradient(circle, rgba(0,0,0,0.2) 1px, transparent 1px);
-  background-size: 15px 15px;
-  animation: noise 1s steps(8, end) infinite;
+    radial-gradient(circle, rgba(0,0,0,0.8) 1px, transparent 1px);
+  background-size: 20px 20px;
+  animation: noise 2s steps(8, end) infinite;
 }
 
 .crt-glow {
@@ -89,80 +89,80 @@
 
 @keyframes flicker {
   0% {
-    opacity: 0.27861;
+    opacity: 0.1;
   }
   5% {
-    opacity: 0.34769;
+    opacity: 0.12;
   }
   10% {
-    opacity: 0.23604;
+    opacity: 0.08;
   }
   15% {
-    opacity: 0.90626;
+    opacity: 0.05;
   }
   20% {
-    opacity: 0.18128;
+    opacity: 0.15;
   }
   25% {
-    opacity: 0.83891;
+    opacity: 0.03;
   }
   30% {
-    opacity: 0.65583;
+    opacity: 0.1;
   }
   35% {
-    opacity: 0.67807;
+    opacity: 0.07;
   }
   40% {
-    opacity: 0.26559;
+    opacity: 0.13;
   }
   45% {
-    opacity: 0.84693;
+    opacity: 0.04;
   }
   50% {
-    opacity: 0.96019;
+    opacity: 0.02;
   }
   55% {
-    opacity: 0.08594;
+    opacity: 0.16;
   }
   60% {
-    opacity: 0.20313;
+    opacity: 0.09;
   }
   65% {
-    opacity: 0.71988;
+    opacity: 0.06;
   }
   70% {
-    opacity: 0.53455;
+    opacity: 0.11;
   }
   75% {
-    opacity: 0.37288;
+    opacity: 0.14;
   }
   80% {
-    opacity: 0.71428;
+    opacity: 0.05;
   }
   85% {
-    opacity: 0.70419;
+    opacity: 0.08;
   }
   90% {
-    opacity: 0.7003;
+    opacity: 0.07;
   }
   95% {
-    opacity: 0.36108;
+    opacity: 0.12;
   }
   100% {
-    opacity: 0.24387;
+    opacity: 0.1;
   }
 }
 
 @keyframes noise {
   0% { transform: translate(0, 0); }
-  12.5% { transform: translate(-5px, -5px); }
-  25% { transform: translate(-5px, 5px); }
-  37.5% { transform: translate(5px, -5px); }
-  50% { transform: translate(5px, 5px); }
-  62.5% { transform: translate(-5px, 5px); }
-  75% { transform: translate(-5px, -5px); }
-  87.5% { transform: translate(5px, -5px); }
-  100% { transform: translate(5px, 5px); }
+  12.5% { transform: translate(-2px, -2px); }
+  25% { transform: translate(-2px, 2px); }
+  37.5% { transform: translate(2px, -2px); }
+  50% { transform: translate(2px, 2px); }
+  62.5% { transform: translate(-2px, 2px); }
+  75% { transform: translate(-2px, -2px); }
+  87.5% { transform: translate(2px, -2px); }
+  100% { transform: translate(2px, 2px); }
 }
 
 /* CRT Toggle States */
