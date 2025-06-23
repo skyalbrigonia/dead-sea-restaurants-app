@@ -3,9 +3,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import CreateReviewForm from '@/components/CreateReviewForm';
-import DonutAsciiHeader from '@/components/DonutAsciiHeader';
-import NervLogo from '@/components/NervLogo';
-import SeeleLogo from '@/components/SeeleLogo';
 import FilterControls from '@/components/FilterControls';
 import VoteButtons from '@/components/VoteButtons';
 import CRTToggle from '@/components/CRTToggle';
@@ -43,6 +40,13 @@ export default function HomePage() {
     fetchReviews(activeFilter);
   }, [activeFilter]);
 
+  // Function to handle new review addition
+  const handleNewReview = (newReview) => {
+    if (activeFilter === null || newReview.rating === activeFilter) {
+      setReviews((currentReviews) => [newReview, ...currentReviews]);
+    }
+  };
+
   useEffect(() => {
     const channel = supabase
       .channel('realtime reviews')
@@ -50,9 +54,8 @@ export default function HomePage() {
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'reviews' },
         (payload) => {
-          if (activeFilter === null || payload.new.rating === activeFilter) {
-            setReviews((currentReviews) => [payload.new, ...currentReviews]);
-          }
+          console.log('New review received:', payload.new);
+          handleNewReview(payload.new);
         }
       )
       .subscribe();
@@ -65,21 +68,20 @@ export default function HomePage() {
   return (
     <div className="crt-container min-h-screen">
       <CRTToggle />
+      <div className="power-led"></div>
       <div className="crt-screen">
-        <div className="crt-scanlines"></div>
-        <div className="crt-noise"></div>
         <div className="crt-glow"></div>
         <div className="container mx-auto p-4 max-w-7xl font-mono min-h-screen flex flex-col">
       
-      <header className="w-full flex justify-center items-center min-h-32">
-        <DonutAsciiHeader />
+      <header className="w-full text-center py-8">
+        <h1 className="text-4xl font-bold mb-4">P.R.A.S.</h1>
+        <p className="text-xl">[ Piattaforma Recensioni ASCII System ]</p>
       </header>
 
       <main className="flex-grow">
-          <p className="text-center -mt-6 mb-8">[ Piattaforma Recensioni ASCII System ]</p>
           
           <div className="max-w-4xl mx-auto">
-            <CreateReviewForm />
+            <CreateReviewForm onNewReview={handleNewReview} />
 
             <div className="mt-12">
               {/* FIX: Spostato il componente per i filtri qui, prima della lista */}
@@ -129,13 +131,10 @@ export default function HomePage() {
           </div>
       </main>
       
-      <footer className="w-full flex flex-col md:flex-row justify-between items-center py-8 mt-12 border-t-2 border-green-700 border-dashed space-y-8 md:space-y-0">
-         <div>
-            <NervLogo />
-         </div>
-         <div>
-            <SeeleLogo />
-         </div>
+      <footer className="w-full text-center py-8 mt-12 border-t-2 border-green-700 border-dashed">
+         <p className="text-lg text-green-400">
+            [ POWERED BY NERV MAGI SYSTEM ]
+         </p>
       </footer>
         </div>
       </div>

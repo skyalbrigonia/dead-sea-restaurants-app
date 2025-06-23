@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
-export default function CreateReviewForm() {
+export default function CreateReviewForm({ onNewReview }) {
   const [restaurantName, setRestaurantName] = useState('');
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(3);
@@ -18,15 +18,33 @@ export default function CreateReviewForm() {
     setSuccess('');
     try {
       const data = {
-        "restaurant_name": restaurantName, "review_text": reviewText,
-        "rating": Number(rating), "maps_link": mapsLink,
+        "restaurant_name": restaurantName, 
+        "review_text": reviewText,
+        "rating": Number(rating), 
+        "maps_link": mapsLink,
       };
-      await supabase.from('reviews').insert([data]);
-      setRestaurantName(''); setReviewText(''); setRating(3); setMapsLink('');
+      
+      const { data: insertedData, error } = await supabase
+        .from('reviews')
+        .insert([data])
+        .select();
+      
+      if (error) throw error;
+      
+      // Call the callback immediately to update the UI
+      if (onNewReview && insertedData && insertedData[0]) {
+        onNewReview(insertedData[0]);
+      }
+      
+      setRestaurantName(''); 
+      setReviewText(''); 
+      setRating(3); 
+      setMapsLink('');
       setSuccess('LOG INSERITO CORRETTAMENTE');
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError('TRASMISSIONE DATI FALLITA'); console.error(err);
+      setError('TRASMISSIONE DATI FALLITA'); 
+      console.error(err);
     } finally {
       setIsSubmitting(false);
     }

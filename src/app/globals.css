@@ -3,20 +3,55 @@
 @tailwind utilities;
 
 /* ======================
-   CRT EFFECT - Exact replica from CodePen
+   CRT EFFECT STYLES - Original balanced version
    ====================== */
 
+/* Simplified CRT Monitor Frame */
 .crt-container {
   position: relative;
-  overflow: hidden;
+  padding: 40px;
+  background: #2a2a2a;
+  border-radius: 20px;
+  border: 3px solid #333333;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.8),
+    inset 0 0 20px rgba(255, 255, 255, 0.05);
 }
 
+/* Simplified Monitor Bezel */
+.crt-container::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  background: #1a1a1a;
+  border-radius: 12px;
+  border: 1px solid #333333;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
+}
+
+/* Simplified screen effect */
 .crt-screen {
   position: relative;
-  background: #0a0a0a;
-  animation: flicker 0.15s infinite linear;
+  z-index: 5;
+  filter: contrast(1.05) brightness(1.1);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000000;
+  
+  /* Optimized CRT text shadow effect */
+  animation: textShadow 1.6s infinite;
 }
 
+/* Content inside screen should be above effects */
+.crt-screen .container {
+  position: relative;
+  z-index: 10;
+}
+
+/* Optimized screen-door effect (scanlines + RGB separation) */
 .crt-screen::before {
   content: " ";
   display: block;
@@ -25,12 +60,16 @@
   left: 0;
   bottom: 0;
   right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
-  z-index: 2;
+  background: 
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 1;
   background-size: 100% 2px, 3px 100%;
   pointer-events: none;
+  border-radius: 8px;
 }
 
+/* Optimized flicker effect */
 .crt-screen::after {
   content: " ";
   display: block;
@@ -41,133 +80,144 @@
   right: 0;
   background: rgba(18, 16, 16, 0.1);
   opacity: 0;
-  z-index: 2;
+  z-index: 1;
   pointer-events: none;
-  animation: flicker 0.15s infinite linear;
+  animation: flicker 0.15s infinite;
+  border-radius: 8px;
 }
 
-/* Scanlines */
-.crt-scanlines {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1000;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0, 0, 0, 0.03) 2px,
-    rgba(0, 0, 0, 0.03) 4px
-  );
-}
-
-.crt-noise {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1000;
-  pointer-events: none;
-  opacity: 0.03;
-  background-image: 
-    radial-gradient(circle, rgba(0,0,0,0.8) 1px, transparent 1px);
-  background-size: 20px 20px;
-  animation: noise 2s steps(8, end) infinite;
-}
-
+/* Screen glow - kept but simplified */
 .crt-glow {
-  display: none;
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: radial-gradient(ellipse at center, rgba(51, 255, 51, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+  animation: glow 2s ease-in-out infinite alternate;
+  z-index: 0;
+  border-radius: 12px;
 }
 
 /* ========================
-   CRT ANIMATIONS
+   OPTIMIZED CRT ANIMATIONS
    ======================== */
 
+/* Optimized flicker animation with better performance */
 @keyframes flicker {
-  0% {
-    opacity: 0.1;
-  }
-  5% {
-    opacity: 0.12;
-  }
-  10% {
-    opacity: 0.08;
-  }
-  15% {
-    opacity: 0.05;
-  }
-  20% {
-    opacity: 0.15;
-  }
-  25% {
-    opacity: 0.03;
-  }
-  30% {
-    opacity: 0.1;
-  }
-  35% {
-    opacity: 0.07;
-  }
-  40% {
-    opacity: 0.13;
-  }
-  45% {
-    opacity: 0.04;
-  }
-  50% {
-    opacity: 0.02;
-  }
-  55% {
-    opacity: 0.16;
-  }
-  60% {
-    opacity: 0.09;
-  }
-  65% {
-    opacity: 0.06;
-  }
-  70% {
-    opacity: 0.11;
-  }
-  75% {
-    opacity: 0.14;
-  }
-  80% {
-    opacity: 0.05;
-  }
-  85% {
-    opacity: 0.08;
-  }
-  90% {
-    opacity: 0.07;
-  }
-  95% {
-    opacity: 0.12;
-  }
-  100% {
-    opacity: 0.1;
-  }
+  0% { opacity: 0.27861; }
+  5% { opacity: 0.34769; }
+  10% { opacity: 0.23604; }
+  15% { opacity: 0.90626; }
+  20% { opacity: 0.18128; }
+  25% { opacity: 0.83891; }
+  30% { opacity: 0.65583; }
+  35% { opacity: 0.67807; }
+  40% { opacity: 0.26559; }
+  45% { opacity: 0.84693; }
+  50% { opacity: 0.96019; }
+  55% { opacity: 0.08594; }
+  60% { opacity: 0.20313; }
+  65% { opacity: 0.71988; }
+  70% { opacity: 0.53455; }
+  75% { opacity: 0.37288; }
+  80% { opacity: 0.71428; }
+  85% { opacity: 0.70419; }
+  90% { opacity: 0.7003; }
+  95% { opacity: 0.36108; }
+  100% { opacity: 0.24387; }
 }
 
-@keyframes noise {
-  0% { transform: translate(0, 0); }
-  12.5% { transform: translate(-2px, -2px); }
-  25% { transform: translate(-2px, 2px); }
-  37.5% { transform: translate(2px, -2px); }
-  50% { transform: translate(2px, 2px); }
-  62.5% { transform: translate(-2px, 2px); }
-  75% { transform: translate(-2px, -2px); }
-  87.5% { transform: translate(2px, -2px); }
-  100% { transform: translate(2px, 2px); }
+/* Color separation text shadow animation */
+@keyframes textShadow {
+  0% { text-shadow: 0.4389924193300864px 0 1px rgba(0,30,255,0.5), -0.4389924193300864px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  5% { text-shadow: 2.7928974010788217px 0 1px rgba(0,30,255,0.5), -2.7928974010788217px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  10% { text-shadow: 0.02956275843481219px 0 1px rgba(0,30,255,0.5), -0.02956275843481219px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  15% { text-shadow: 0.40218538552878136px 0 1px rgba(0,30,255,0.5), -0.40218538552878136px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  20% { text-shadow: 3.4794037899852017px 0 1px rgba(0,30,255,0.5), -3.4794037899852017px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  25% { text-shadow: 1.6125630401149584px 0 1px rgba(0,30,255,0.5), -1.6125630401149584px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  30% { text-shadow: 0.7015590085143956px 0 1px rgba(0,30,255,0.5), -0.7015590085143956px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  35% { text-shadow: 3.896914047650351px 0 1px rgba(0,30,255,0.5), -3.896914047650351px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  40% { text-shadow: 3.870905614848819px 0 1px rgba(0,30,255,0.5), -3.870905614848819px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  45% { text-shadow: 2.231056963361899px 0 1px rgba(0,30,255,0.5), -2.231056963361899px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  50% { text-shadow: 0.08084290417898504px 0 1px rgba(0,30,255,0.5), -0.08084290417898504px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  55% { text-shadow: 2.3758461067427543px 0 1px rgba(0,30,255,0.5), -2.3758461067427543px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  60% { text-shadow: 2.202193051050636px 0 1px rgba(0,30,255,0.5), -2.202193051050636px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  65% { text-shadow: 2.8638780614874975px 0 1px rgba(0,30,255,0.5), -2.8638780614874975px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  70% { text-shadow: 0.48874025155497314px 0 1px rgba(0,30,255,0.5), -0.48874025155497314px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  75% { text-shadow: 1.8948491305757957px 0 1px rgba(0,30,255,0.5), -1.8948491305757957px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  80% { text-shadow: 0.0833037308038857px 0 1px rgba(0,30,255,0.5), -0.0833037308038857px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  85% { text-shadow: 0.09769827255241735px 0 1px rgba(0,30,255,0.5), -0.09769827255241735px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  90% { text-shadow: 3.443339761481782px 0 1px rgba(0,30,255,0.5), -3.443339761481782px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  95% { text-shadow: 2.1841838852799786px 0 1px rgba(0,30,255,0.5), -2.1841838852799786px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+  100% { text-shadow: 2.6208764473832513px 0 1px rgba(0,30,255,0.5), -2.6208764473832513px 0 1px rgba(255,0,80,0.3), 0 0 3px; }
+}
+
+@keyframes glow {
+  0% { opacity: 0.8; }
+  100% { opacity: 0.4; }
+}
+
+
+
+/* Monitor decorative elements */
+.crt-container .monitor-brand {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: rgba(51, 255, 51, 0.4);
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  z-index: 20;
+  font-family: monospace;
+  text-shadow: 0 0 5px rgba(51, 255, 51, 0.3);
+}
+
+.crt-container .power-led {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  width: 6px;
+  height: 6px;
+  background: #00ff00;
+  border-radius: 50%;
+  box-shadow: 
+    0 0 8px #00ff00,
+    0 0 16px #00ff00,
+    0 0 24px #00ff00;
+  animation: powerLed 2s ease-in-out infinite alternate;
+  z-index: 15;
+}
+
+@keyframes powerLed {
+  0% { opacity: 0.8; }
+  100% { opacity: 1; }
 }
 
 /* CRT Toggle States */
+.crt-disabled .crt-container {
+  padding: 20px;
+  background: #1a1a1a;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.crt-disabled .crt-container::before {
+  display: none;
+}
+
+.crt-disabled .crt-glow {
+  display: none;
+}
+
 .crt-disabled .crt-screen {
+  filter: none;
   animation: none;
+  background: transparent;
+  border-radius: 0;
 }
 
 .crt-disabled .crt-screen::before,
@@ -175,9 +225,10 @@
   display: none;
 }
 
-.crt-disabled .crt-scanlines,
-.crt-disabled .crt-noise {
-  display: none;
+.crt-disabled .power-led {
+  background: #333333;
+  box-shadow: none;
+  animation: none;
 }
 
 /* ======================
