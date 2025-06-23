@@ -7,6 +7,8 @@ import DonutAsciiHeader from '@/components/DonutAsciiHeader';
 import NervLogo from '@/components/NervLogo';
 import SeeleLogo from '@/components/SeeleLogo';
 import FilterControls from '@/components/FilterControls';
+import VoteButtons from '@/components/VoteButtons';
+import CRTToggle from '@/components/CRTToggle';
 
 export default function HomePage() {
   const [reviews, setReviews] = useState([]);
@@ -61,7 +63,13 @@ export default function HomePage() {
   }, [activeFilter]);
 
   return (
-    <div className="container mx-auto p-4 max-w-7xl font-mono min-h-screen flex flex-col">
+    <div className="crt-container min-h-screen">
+      <CRTToggle />
+      <div className="crt-screen">
+        <div className="crt-scanlines"></div>
+        <div className="crt-noise"></div>
+        <div className="crt-glow"></div>
+        <div className="container mx-auto p-4 max-w-7xl font-mono min-h-screen flex flex-col">
       
       <header className="w-full flex justify-center items-center min-h-32">
         <DonutAsciiHeader />
@@ -104,9 +112,11 @@ export default function HomePage() {
                                 </div>
                             )}
 
-                            <div className="text-right mt-4 border-t-2 border-green-500 border-dashed pt-2 flex justify-between items-center">
-                                <span></span>
-                                <p className="text-xl">{`VOTO: [${review.rating}/5] [${'█'.repeat(review.rating)}${'░'.repeat(5 - review.rating)}] (${(review.rating / 5 * 100).toFixed(0)}%)`}</p>
+                            <div className="mt-4 border-t-2 border-green-500 border-dashed pt-2">
+                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                                    <VoteButtons reviewId={review.id} />
+                                    <p className="text-xl">{`VOTO: [${review.rating}/5] [${'█'.repeat(review.rating)}${'░'.repeat(5 - review.rating)}] (${(review.rating / 5 * 100).toFixed(0)}%)`}</p>
+                                </div>
                             </div>
                         </div>
                     ))
@@ -127,6 +137,8 @@ export default function HomePage() {
             <SeeleLogo />
          </div>
       </footer>
+        </div>
+      </div>
     </div>
   );
 }

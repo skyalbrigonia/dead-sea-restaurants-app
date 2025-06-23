@@ -44,8 +44,19 @@ CREATE TABLE reviews (
   maps_link TEXT
 );
 
--- Enable real-time updates for the 'reviews' table
+-- Create the votes table for user votes on reviews
+CREATE TABLE review_votes (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  review_id BIGINT NOT NULL REFERENCES reviews(id) ON DELETE CASCADE,
+  user_ip TEXT NOT NULL,
+  vote_type TEXT NOT NULL CHECK (vote_type IN ('upvote', 'downvote')),
+  UNIQUE(review_id, user_ip)
+);
+
+-- Enable real-time updates for both tables
 ALTER PUBLICATION supabase_realtime ADD TABLE reviews;
+ALTER PUBLICATION supabase_realtime ADD TABLE review_votes;
 ```
 
 4. Go to **Project Settings** → **API**. Here you will find your credentials. Copy the project URL and the anon public API key.
