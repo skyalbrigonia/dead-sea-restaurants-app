@@ -10,23 +10,28 @@
 .crt-container {
   position: relative;
   overflow: hidden;
-  border-radius: 15px;
+  border-radius: 25px;
   background: radial-gradient(ellipse at center, #0a0a0a 0%, #000000 100%);
   box-shadow: 
-    inset 0 0 50px #000000,
-    inset 20px 0 80px #000000,
-    inset -20px 0 80px #000000,
-    inset 20px 0 300px #000000,
-    inset -20px 0 300px #000000,
-    0 0 50px #33ff33;
+    inset 0 0 100px #000000,
+    inset 40px 0 120px #000000,
+    inset -40px 0 120px #000000,
+    inset 40px 0 500px #000000,
+    inset -40px 0 500px #000000,
+    0 0 100px #33ff33,
+    0 0 200px rgba(51, 255, 51, 0.5),
+    0 0 300px rgba(51, 255, 51, 0.3);
+  border: 3px solid rgba(51, 255, 51, 0.3);
 }
 
 /* Screen curvature effect */
 .crt-screen {
   position: relative;
-  filter: contrast(1.1) brightness(1.2);
-  transform: perspective(1000px) rotateX(0deg);
-  animation: screenFlicker 0.15s infinite linear alternate;
+  filter: contrast(1.3) brightness(1.1) saturate(1.2);
+  transform: perspective(800px) rotateX(2deg);
+  animation: screenFlicker 0.1s infinite linear alternate;
+  border-radius: 20px;
+  overflow: hidden;
 }
 
 /* Scanlines overlay */
@@ -40,11 +45,13 @@
   background: repeating-linear-gradient(
     0deg,
     transparent,
-    transparent 2px,
-    rgba(51, 255, 51, 0.03) 2px,
-    rgba(51, 255, 51, 0.03) 4px
+    transparent 1px,
+    rgba(51, 255, 51, 0.1) 1px,
+    rgba(51, 255, 51, 0.1) 2px,
+    rgba(0, 0, 0, 0.1) 2px,
+    rgba(0, 0, 0, 0.1) 3px
   );
-  animation: scanlines 0.1s linear infinite;
+  animation: scanlines 0.05s linear infinite;
 }
 
 /* Moving scanline */
@@ -54,14 +61,16 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 100px;
+  height: 150px;
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    rgba(51, 255, 51, 0.1) 50%,
+    rgba(51, 255, 51, 0.3) 30%,
+    rgba(51, 255, 51, 0.4) 50%,
+    rgba(51, 255, 51, 0.3) 70%,
     transparent 100%
   );
-  animation: movingScanline 2s linear infinite;
+  animation: movingScanline 1.5s linear infinite;
 }
 
 /* TV noise/static */
@@ -72,21 +81,21 @@
   right: 0;
   bottom: 0;
   pointer-events: none;
-  opacity: 0.02;
+  opacity: 0.08;
   background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  animation: noise 0.2s steps(10, end) infinite;
+  animation: noise 0.1s steps(8, end) infinite;
 }
 
 /* Screen glow */
 .crt-glow {
   position: absolute;
-  top: -10px;
-  left: -10px;
-  right: -10px;
-  bottom: -10px;
-  background: radial-gradient(ellipse at center, rgba(51, 255, 51, 0.1) 0%, transparent 70%);
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: radial-gradient(ellipse at center, rgba(51, 255, 51, 0.3) 0%, rgba(51, 255, 51, 0.1) 50%, transparent 80%);
   pointer-events: none;
-  animation: glow 2s ease-in-out infinite alternate;
+  animation: glow 1.5s ease-in-out infinite alternate;
 }
 
 /* ========================
@@ -95,14 +104,16 @@
 
 @keyframes screenFlicker {
   0% { opacity: 1; }
+  96% { opacity: 1; }
+  97% { opacity: 0.9; }
   98% { opacity: 1; }
-  99% { opacity: 0.98; }
+  99% { opacity: 0.85; }
   100% { opacity: 1; }
 }
 
 @keyframes scanlines {
   0% { background-position: 0 0; }
-  100% { background-position: 0 4px; }
+  100% { background-position: 0 3px; }
 }
 
 @keyframes movingScanline {
@@ -131,12 +142,46 @@
 /* Occasional strong flicker */
 @keyframes strongFlicker {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
+  50% { opacity: 0.6; }
+}
+
+/* RGB Chromatic Aberration */
+@keyframes rgbShift {
+  0% { text-shadow: 0 0 5px rgba(51, 255, 51, 0.5); }
+  25% { text-shadow: 2px 0 0 #ff0000, -1px 0 0 #00ffff, 0 0 5px rgba(51, 255, 51, 0.5); }
+  50% { text-shadow: 0 0 5px rgba(51, 255, 51, 0.5); }
+  75% { text-shadow: -1px 0 0 #ff0000, 1px 0 0 #00ffff, 0 0 5px rgba(51, 255, 51, 0.5); }
+  100% { text-shadow: 0 0 5px rgba(51, 255, 51, 0.5); }
 }
 
 /* Apply strong flicker randomly */
 .crt-screen:nth-child(odd) {
-  animation: screenFlicker 0.15s infinite linear alternate, strongFlicker 3s infinite;
+  animation: screenFlicker 0.1s infinite linear alternate, strongFlicker 2s infinite;
+}
+
+/* Apply chromatic aberration to text */
+.crt-screen * {
+  animation: rgbShift 8s infinite ease-in-out;
+}
+
+/* Barrel distortion for authentic CRT look */
+.crt-screen::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 60%,
+    rgba(0, 0, 0, 0.1) 70%,
+    rgba(0, 0, 0, 0.3) 85%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  pointer-events: none;
+  border-radius: 20px;
 }
 
 /* CRT Toggle States */
