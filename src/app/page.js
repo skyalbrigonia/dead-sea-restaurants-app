@@ -83,11 +83,36 @@ export default function HomePage() {
 
   return (
     <div className="crt-system">
-      {/* SVG Clip Path for authentic CRT shape */}
+      {/* SVG Clip Path for authentic CRT shape + Noise Filter */}
       <svg height="0" width="0" viewBox="0 0 93.88 76.19" style={{position: 'absolute'}}>
         <clipPath id="crtPath" clipPathUnits="objectBoundingBox" transform="scale(0.01065 0.01312)">
           <path d="M47.78.5c11.65,0,38,.92,41.81,4,3.59,3,3.79,22.28,3.79,34.19,0,11.67-.08,27.79-3.53,31.24S60.3,75.69,47.78,75.69c-11.2,0-39.89-1.16-44-5.27S.57,52.42.57,38.73.31,8.56,4,4.88,34.77.5,47.78.5Z" />
         </clipPath>
+        
+        {/* Noise filter for grainy texture */}
+        <filter id='grainFilter'>
+          <feTurbulence 
+            type='fractalNoise' 
+            baseFrequency='0.9' 
+            numOctaves='4' 
+            stitchTiles='stitch' 
+          />
+        </filter>
+        
+        {/* Subtle noise filter for the frame */}
+        <filter id='frameGrainFilter'>
+          <feTurbulence 
+            type='fractalNoise' 
+            baseFrequency='0.15' 
+            numOctaves='3' 
+            stitchTiles='stitch' 
+          />
+        </filter>
+      </svg>
+      
+      {/* Hidden SVG for noise background */}
+      <svg width="200" height="200" style={{position: 'absolute', visibility: 'hidden'}}>
+        <rect width='100%' height='100%' filter='url(#frameGrainFilter)' />
       </svg>
       
       {/* Power button - nella cornice esterna del monitor */}

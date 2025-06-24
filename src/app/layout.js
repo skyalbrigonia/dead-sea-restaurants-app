@@ -11,7 +11,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="it">
-      <body className={vt323.className}>
+      <body className={`${vt323.className} crt-initializing`}>
         {children}
       </body>
     </html>

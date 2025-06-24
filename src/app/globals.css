@@ -12,16 +12,47 @@
 .crt-system {
   margin: 0;
   padding: 0;
-  /* Cornice vintage CRT - stesso colore e texture del bottone power */
-  background: #c8b89a;
-  background-image: 
-    radial-gradient(ellipse at center, #d4c5a9 0%, #bca888 50%, #a89b7f 100%),
-    repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.02) 2px, rgba(0,0,0,0.02) 4px),
-    repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(255,255,255,0.01) 2px, rgba(255,255,255,0.01) 4px);
   min-height: 100vh;
   position: relative;
-  /* Assicura che il contenitore possa contenere elementi posizionati in modo assoluto */
-  box-shadow: inset 0 0 50px rgba(0,0,0,0.1);
+  isolation: isolate; /* Crea un nuovo stacking context per blending */
+  
+  /* Grainy gradient background usando la tecnica CSS-Tricks */
+  background: 
+    /* Gradiente principale della cornice */
+    radial-gradient(ellipse at center, #d4c5a9 0%, #bca888 50%, #a89b7f 100%),
+    /* Gradiente per depth e ombreggiatura */
+    linear-gradient(135deg, rgba(0,0,0,0.1) 0%, transparent 50%, rgba(255,255,255,0.1) 100%),
+    /* Rumore SVG inline per texture grainy */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.15' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  
+  /* Effetti di texture e realismo */
+  filter: contrast(125%) brightness(108%);
+  
+  /* Ombra interna per profondità realistica */
+  box-shadow: 
+    inset 0 0 150px rgba(0,0,0,0.2),
+    inset 0 0 75px rgba(0,0,0,0.15),
+    inset 0 0 25px rgba(0,0,0,0.1),
+    /* Ombra esterna per staccare dal background */
+    0 0 30px rgba(0,0,0,0.4),
+    0 0 60px rgba(0,0,0,0.2);
+}
+
+/* Pseudo-elemento per texture aggiuntiva sui bordi */
+.crt-system::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    /* Texture di invecchiamento sui bordi */
+    radial-gradient(ellipse at 20% 20%, transparent 40%, rgba(0,0,0,0.03) 70%, transparent),
+    radial-gradient(ellipse at 80% 80%, transparent 40%, rgba(255,255,255,0.02) 70%, transparent),
+    radial-gradient(ellipse at 10% 90%, transparent 50%, rgba(0,0,0,0.02) 80%, transparent);
+  mix-blend-mode: multiply;
+  pointer-events: none;
 }
 
 .crt-screen-container {
@@ -29,6 +60,8 @@
   width: 100%;
   height: 100vh;
   min-height: 100vh;
+  /* Previene layout shift durante hydration */
+  overflow: hidden;
 }
 
 /* CRT Screen - Full Content Height */
@@ -36,10 +69,13 @@
   position: relative;
   background-color: #111; /* Default OFF state */
   width: 100%;
+  height: 100vh; /* Forza altezza fissa per stabilità */
   min-height: 100vh;
+  max-height: 100vh; /* Previene overflow durante animazioni */
   box-sizing: content-box;
   clip-path: url(#crtPath);
   text-transform: uppercase;
+  overflow: hidden; /* Nasconde qualsiasi overflow */
 }
 
 .crt-content {
@@ -49,6 +85,9 @@
   padding: 2rem;
   background-color: inherit;
   box-sizing: border-box;
+  /* Stabilizza layout durante l'hydration */
+  overflow: auto;
+  will-change: opacity, visibility; /* Ottimizza per animazioni */
 }
 
 /* Scanlines enhanced */
@@ -252,18 +291,76 @@
    CRT TOGGLE STATES - SIMPLIFIED
    ======================== */
 
-/* Default state: CRT is OFF - content hidden but ready for animation */
+/* Default state: CRT is OFF - content hidden immediately to prevent FOUC */
 .crt-content {
+  opacity: 0;
+  visibility: hidden;
+  /* Previene il flash del contenuto al caricamento */
+}
+
+/* Stato durante l'inizializzazione - stabilizza layout e nasconde contenuto */
+.crt-initializing .crt-content {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Stabilizza le dimensioni durante l'inizializzazione */
+.crt-initializing .crt-screen-container,
+.crt-initializing .crt {
+  height: 100vh !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+/* Stabilizza il container principale */
+.crt-initializing .crt-system {
+  height: 100vh !important;
+  min-height: 100vh !important;
+  overflow: hidden !important;
+}
+
+/* Previene layout shift con regole generali */
+.crt-system,
+.crt-screen-container,
+.crt {
+  /* Garantisce stabilità dimensionale */
+  contain: layout style paint;
+  transform: translateZ(0); /* Forza GPU acceleration */
+}
+
+/* Stabilizza dimensioni dello schermo su device vari */
+@media screen {
+  .crt-system {
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height per mobile */
+  }
+  
+  .crt-screen-container,
+  .crt {
+    height: 100vh;
+    height: 100dvh;
+  }
+}
+
+/* CRT ON State - content visible and ready for animation */
+.crt-active .crt-content {
   opacity: 1;
   visibility: visible;
 }
 
 /* CRT transitioning to OFF state - Show power off animation */
 .crt-disabled .crt-content {
+  opacity: 1;
+  visibility: visible;
   animation: crt-power-off 0.55s forwards ease-in-out;
 }
 
-/* CRT completely OFF - hide content after animation */
+/* CRT completely OFF - hide content after animation (same as default) */
 .crt-off .crt-content {
   opacity: 0;
   visibility: hidden;
@@ -374,57 +471,66 @@ input[type=number] {
 
 .crt-power-switch-container {
   position: absolute !important;
-  top: 2rem !important;
-  right: 2rem !important;
+  bottom: 1rem !important;
+  right: 1.5rem !important;
   z-index: 9999 !important;
   display: flex;
   flex-direction: column;
-  /* Posizionato in alto a destra nella cornice nera del monitor */
+  /* Posizionato compatto in basso a destra nella cornice */
   transform: none !important;
   margin: 0 !important;
-  bottom: auto !important;
+  top: auto !important;
   left: auto !important;
 }
 
 #crt-switch + .crt-switch-label {
   position: relative;
   display: inline-block;
-  width: 4rem;
-  height: 4rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
   font-family: sans-serif;
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: normal;
   line-height: 1;
-  text-shadow: 0.1rem 0.1rem 0 rgba(255, 255, 255, 0.4);
+  text-shadow: 0.05rem 0.05rem 0 rgba(255, 255, 255, 0.4);
   color: #666;
   cursor: pointer;
-  /* Colore e texture di un vecchio monitor CRT */
-  background: #c8b89a;
-  background-image: 
-    radial-gradient(circle at left top, #d4c5a9, #bca888),
-    repeating-linear-gradient(45deg, transparent, transparent 1px, rgba(0,0,0,0.03) 1px, rgba(0,0,0,0.03) 2px),
-    repeating-linear-gradient(-45deg, transparent, transparent 1px, rgba(255,255,255,0.02) 1px, rgba(255,255,255,0.02) 2px);
+  
+  /* Texture grainy coordinata con la cornice */
+  background: 
+    /* Gradiente principale */
+    radial-gradient(circle at 30% 30%, #d4c5a9, #bca888 70%, #a89b7f),
+    /* Texture di profondità */
+    linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%, rgba(0,0,0,0.1) 100%),
+    /* Rumore SVG per realismo */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='buttonNoise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.25' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23buttonNoise)'/%3E%3C/svg%3E");
+  
+  /* Filtri per intensificare la texture */
+  filter: contrast(115%) brightness(105%);
+  
   box-shadow:
-    -0.15rem -0.15rem 0 #d4c5a9,
-    0.15rem 0.15rem 0 #a89b7f,
-    0 0 0 0.2rem #8b7f68,
-    0.2rem 0.2rem 0.5rem rgba(0,0,0,0.3);
+    -0.1rem -0.1rem 0 #d4c5a9,
+    0.1rem 0.1rem 0 #a89b7f,
+    0 0 0 0.15rem #8b7f68,
+    0.15rem 0.15rem 0.3rem rgba(0,0,0,0.3),
+    /* Ombra interna per profondità */
+    inset 0 0 0.3rem rgba(0,0,0,0.1);
 }
 
 #crt-switch + .crt-switch-label:after {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-5.5rem, -50%);
+  transform: translate(-3.5rem, -50%);
   content: '';
   display: block;
   border-radius: 50%;
-  height: 0.6rem;
-  width: 0.6rem;
+  height: 0.4rem;
+  width: 0.4rem;
   background: #660000;
-  border: 0.1rem solid #8b7f68;
-  box-shadow: inset 0 0 0.2rem rgba(0,0,0,0.3);
+  border: 0.05rem solid #8b7f68;
+  box-shadow: inset 0 0 0.1rem rgba(0,0,0,0.3);
 }
 
 #crt-switch:checked + .crt-switch-label,
@@ -441,36 +547,52 @@ input[type=number] {
   box-shadow: 0 0 1.2rem 0 rgba(0, 255, 0, 1);
 }
 
-.switch-text {
+/* Cambia colore del simbolo quando il CRT è acceso */
+#crt-switch:checked + .crt-switch-label .power-symbol {
+  color: #888;
+  text-shadow: 
+    0 0 3px rgba(255,255,255,0.8),
+    0 0 1px rgba(0,0,0,0.5);
+}
+
+.power-symbol {
   position: absolute;
-  top: -2rem;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  font-size: 0.9rem;
-  color: #c8b89a;
-  text-shadow: 0 0 3px rgba(200, 184, 154, 0.5);
-  font-weight: bold;
-  letter-spacing: 0.1rem;
-  font-family: 'VT323', 'Courier New', monospace;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.2rem;
+  color: #666;
+  text-shadow: 
+    0 0 2px rgba(0,0,0,0.5),
+    inset 0 0 1px rgba(255,255,255,0.3);
+  font-weight: normal;
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
 }
 
 /* Assicura che il bottone sia sempre visibile su tutti i dispositivi */
 @media (max-width: 768px) {
   .crt-power-switch-container {
-    top: 1rem !important;
-    right: 1rem !important;
+    bottom: 0.5rem !important;
+    right: 0.8rem !important;
     position: absolute !important;
   }
   
   #crt-switch + .crt-switch-label {
-    width: 3rem;
-    height: 3rem;
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.7rem;
   }
   
-  .switch-text {
-    top: -2.5rem;
-    font-size: 0.8rem;
+  #crt-switch + .crt-switch-label:after {
+    transform: translate(-2.8rem, -50%);
+    height: 0.3rem;
+    width: 0.3rem;
+  }
+  
+  .power-symbol {
+    font-size: 1rem;
   }
 }
 

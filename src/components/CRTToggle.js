@@ -5,14 +5,29 @@ const CRTToggle = () => {
   const [crtEnabled, setCrtEnabled] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Applica lo stato di default immediatamente
+  // Applica lo stato di default immediatamente (sempre spento all'avvio)
   useEffect(() => {
-    // Applica immediatamente lo stato di default (spento senza animazione)
+    // Aggiungi classe di inizializzazione per prevenire FOUC
+    document.body.classList.add('crt-initializing');
+    
+    // Forza sempre lo stato di default: spento senza animazione
     document.body.classList.add('crt-off');
     document.body.classList.remove('crt-active', 'crt-disabled');
     
-    setMounted(true);
+    // Forza lo stato a false indipendentemente dal localStorage
+    setCrtEnabled(false);
     
+    // Rimuovi la classe di inizializzazione dopo che il layout è stabile
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.body.classList.remove('crt-initializing');
+        setMounted(true);
+      });
+    });
+    
+    // Opzionale: se vuoi comunque ricordare le preferenze, 
+    // decommenta le righe seguenti:
+    /*
     try {
       const saved = localStorage.getItem('crt-enabled');
       if (saved !== null) {
@@ -26,19 +41,22 @@ const CRTToggle = () => {
       }
     } catch (error) {
       console.error('Errore nel caricamento delle preferenze CRT:', error);
-      // Mantieni il valore di default in caso di errore
     }
+    */
   }, []);
 
-  // Salva le preferenze e applica i CSS al cambio di stato
+  // Applica i CSS al cambio di stato (senza salvare nel localStorage)
   useEffect(() => {
-    if (!mounted) return; // Non salvare fino a quando il componente non è montato
+    if (!mounted) return; // Non agire fino a quando il componente non è montato
     
+    // Opzionale: se vuoi salvare le preferenze, decommenta le righe seguenti:
+    /*
     try {
       localStorage.setItem('crt-enabled', JSON.stringify(crtEnabled));
     } catch (error) {
       console.error('Errore nel salvataggio delle preferenze CRT:', error);
     }
+    */
     
     // Toggle CRT classes on body con gestione delle animazioni
     if (crtEnabled) {
@@ -79,7 +97,7 @@ const CRTToggle = () => {
         title={crtEnabled ? "Disabilita effetto CRT" : "Abilita effetto CRT"}
         aria-label={crtEnabled ? "Disabilita effetto CRT" : "Abilita effetto CRT"}
       >
-        <span className="switch-text">Power</span>
+        <span className="power-symbol">⏻</span>
       </label>
     </div>
   );
