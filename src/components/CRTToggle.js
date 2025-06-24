@@ -2,17 +2,27 @@
 import { useState, useEffect } from 'react';
 
 const CRTToggle = () => {
-  const [crtEnabled, setCrtEnabled] = useState(true);
+  const [crtEnabled, setCrtEnabled] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Carica le preferenze salvate al mount del componente
+  // Applica lo stato di default immediatamente
   useEffect(() => {
+    // Applica immediatamente lo stato di default (spento senza animazione)
+    document.body.classList.add('crt-off');
+    document.body.classList.remove('crt-active', 'crt-disabled');
+    
     setMounted(true);
     
     try {
       const saved = localStorage.getItem('crt-enabled');
       if (saved !== null) {
-        setCrtEnabled(JSON.parse(saved));
+        const savedState = JSON.parse(saved);
+        setCrtEnabled(savedState);
+        // Applica immediatamente lo stato salvato
+        if (savedState) {
+          document.body.classList.add('crt-active');
+          document.body.classList.remove('crt-disabled', 'crt-off');
+        }
       }
     } catch (error) {
       console.error('Errore nel caricamento delle preferenze CRT:', error);
@@ -30,13 +40,20 @@ const CRTToggle = () => {
       console.error('Errore nel salvataggio delle preferenze CRT:', error);
     }
     
-    // Toggle CRT classes on body
+    // Toggle CRT classes on body con gestione delle animazioni
     if (crtEnabled) {
+      document.body.classList.remove('crt-disabled', 'crt-off');
       document.body.classList.add('crt-active');
-      document.body.classList.remove('crt-disabled');
     } else {
-      document.body.classList.add('crt-disabled');
       document.body.classList.remove('crt-active');
+      document.body.classList.add('crt-disabled');
+      
+      // Dopo l'animazione di spegnimento, nascondi completamente il contenuto
+      setTimeout(() => {
+        if (!document.body.classList.contains('crt-active')) {
+          document.body.classList.add('crt-off');
+        }
+      }, 550); // 550ms = durata animazione crt-power-off
     }
   }, [crtEnabled, mounted]);
 
@@ -48,14 +65,23 @@ const CRTToggle = () => {
   }, []);
 
   return (
-    <button
-      onClick={() => setCrtEnabled(!crtEnabled)}
-      className="fixed top-4 right-4 z-50 px-3 py-1 text-xs border border-green-500 hover:bg-green-500 hover:text-black transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-green-500"
-      title={crtEnabled ? "Disabilita effetto CRT" : "Abilita effetto CRT"}
-      aria-label={crtEnabled ? "Disabilita effetto CRT" : "Abilita effetto CRT"}
-    >
-      [ CRT: {crtEnabled ? 'ON' : 'OFF'} ]
-    </button>
+    <div className="crt-power-switch-container">
+      <input 
+        type="checkbox" 
+        id="crt-switch" 
+        checked={crtEnabled}
+        onChange={() => setCrtEnabled(!crtEnabled)}
+        style={{ display: 'none' }}
+      />
+      <label 
+        htmlFor="crt-switch" 
+        className="crt-switch-label"
+        title={crtEnabled ? "Disabilita effetto CRT" : "Abilita effetto CRT"}
+        aria-label={crtEnabled ? "Disabilita effetto CRT" : "Abilita effetto CRT"}
+      >
+        <span className="switch-text">Power</span>
+      </label>
+    </div>
   );
 };
 

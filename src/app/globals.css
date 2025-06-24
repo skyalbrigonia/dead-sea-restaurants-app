@@ -2,40 +2,83 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css?family=VT323');
+
 /* ======================
    ALEC LOWNES CRT EFFECT - Faithful & Optimized
    ====================== */
 
-/* Monitor Frame - Minimal */
-.crt-container {
+/* CRT System Layout - Full Screen */
+.crt-system {
+  margin: 0;
+  padding: 0;
+  /* Cornice vintage CRT - stesso colore e texture del bottone power */
+  background: #c8b89a;
+  background-image: 
+    radial-gradient(ellipse at center, #d4c5a9 0%, #bca888 50%, #a89b7f 100%),
+    repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.02) 2px, rgba(0,0,0,0.02) 4px),
+    repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(255,255,255,0.01) 2px, rgba(255,255,255,0.01) 4px);
+  min-height: 100vh;
   position: relative;
-  padding: 30px;
-  background: #222;
-  border-radius: 15px;
-  border: 2px solid #333;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+  /* Assicura che il contenitore possa contenere elementi posizionati in modo assoluto */
+  box-shadow: inset 0 0 50px rgba(0,0,0,0.1);
 }
 
-.crt-container::before {
-  content: '';
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  right: 15px;
-  bottom: 15px;
-  background: #111;
-  border-radius: 8px;
-  border: 1px solid #333;
+.crt-screen-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
 }
 
-/* CRT Effect - Exact Alec Lownes Implementation */
+/* CRT Screen - Full Content Height */
 .crt {
   position: relative;
-  background: #000;
-  border-radius: 5px;
-  overflow: hidden;
-  /* Text shadow animation applied to the container */
-  animation: textShadow 1.6s infinite;
+  background-color: #111; /* Default OFF state */
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: content-box;
+  clip-path: url(#crtPath);
+  text-transform: uppercase;
+}
+
+.crt-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 2rem;
+  background-color: inherit;
+  box-sizing: border-box;
+}
+
+/* Scanlines enhanced */
+.crt.scanlines {
+  position: relative;
+}
+
+.crt.scanlines::before {
+  content: '';
+  display: block;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0.2rem;
+  z-index: 2147483647;
+  opacity: 0.75;
+}
+
+.crt.scanlines::after {
+  content: '';
+  display: block;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2147483646;
 }
 
 /* Screen-Door Effect - Exact from Alec Lownes */
@@ -68,26 +111,12 @@
   opacity: 0;
   z-index: 2;
   pointer-events: none;
-  animation: flicker 0.15s infinite;
 }
 
 /* Content should be above effects */
 .crt .container {
   position: relative;
   z-index: 3;
-}
-
-/* Power LED - Simple */
-.crt-container .power-led {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  width: 4px;
-  height: 4px;
-  background: #0f0;
-  border-radius: 50%;
-  box-shadow: 0 0 8px #0f0;
-  animation: powerLed 3s ease-in-out infinite alternate;
 }
 
 /* ========================
@@ -149,33 +178,157 @@
   100% { opacity: 1; }
 }
 
+/* CRT Power On/Off Animations - Dagli esempi originali */
+@keyframes crt-power-on {
+  0% {
+    transform: scale(1, 0.8) translate3d(0, 0, 0);
+    filter: brightness(30);
+    opacity: 1;
+  }
+  3.5% {
+    transform: scale(1, 0.8) translate3d(0, 100%, 0);
+  }
+  3.6% {
+    transform: scale(1, 0.8) translate3d(0, -100%, 0);
+  }
+  9% {
+    transform: scale(1.3, 0.6) translate3d(0, 100%, 0);
+  }
+  11% {
+    transform: scale(1, 1) translate3d(0, 0, 0);
+    filter: contrast(0) brightness(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1, 1) translate3d(0, 0, 0);
+    filter: contrast(1) brightness(1.2) saturate(1.3);
+    opacity: 1;
+  }
+}
+
+@keyframes crt-power-off {
+  0% {
+    transform: scale(1, 1.3) translate3d(0, 0, 0);
+    filter: brightness(1);
+    opacity: 1;
+  }
+  60% {
+    transform: scale(1.3, 0.001) translate3d(0, 0, 0);
+    filter: brightness(10);
+  }
+  100% {
+    transform: scale(0.000, 0.0001) translate3d(0, 0, 0);
+    filter: brightness(50);
+  }
+}
+
+/* Scanlines animations */
+@keyframes scan-moving {
+  0% {
+    transform: translate3d(0, 100vh, 0);
+  }
+}
+
+@keyframes scan-crt {
+  0% {
+    background-position: 0 50%;
+  }
+}
+
+/* Blinking cursor */
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+
+
+.cursor {
+  animation: blink 1s steps(5, start) infinite;
+}
+
 /* ========================
-   CRT TOGGLE STATES
+   CRT TOGGLE STATES - SIMPLIFIED
    ======================== */
 
-.crt-disabled .crt-container {
-  padding: 20px;
-  background: #1a1a1a;
-  border: 1px solid #333;
+/* Default state: CRT is OFF - content hidden but ready for animation */
+.crt-content {
+  opacity: 1;
+  visibility: visible;
 }
 
-.crt-disabled .crt-container::before {
-  display: none;
+/* CRT transitioning to OFF state - Show power off animation */
+.crt-disabled .crt-content {
+  animation: crt-power-off 0.55s forwards ease-in-out;
 }
 
-.crt-disabled .crt {
+/* CRT completely OFF - hide content after animation */
+.crt-off .crt-content {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.crt::before {
+  opacity: 0;
+}
+
+.crt::after {
   animation: none;
 }
 
-.crt-disabled .crt::before,
-.crt-disabled .crt::after {
-  display: none;
+.crt.scanlines::before,
+.crt.scanlines::after {
+  animation: none;
 }
 
-.crt-disabled .power-led {
+/* CRT ON State - Show content with effects */
+.crt-active .crt {
   background: #333;
+}
+
+.crt-active .crt-content {
+  opacity: 1;
+  visibility: visible;
+  animation: crt-power-on 4s forwards linear;
+}
+
+.crt-active .crt::before {
+  opacity: 1;
+}
+
+.crt-active .crt::after {
+  animation: flicker 0.15s infinite;
+  /* Reset del punto luminoso quando il CRT è attivo */
+  content: '';
+  width: auto;
+  height: auto;
+  background: rgba(18, 16, 16, 0.1);
+  border-radius: 0;
   box-shadow: none;
-  animation: none;
+  top: 0;
+  left: 0;
+  transform: none;
+}
+
+/* Sovrascrivi l'animazione di spegnimento quando il CRT è attivo */
+.crt-active .crt-content {
+  animation: crt-power-on 4s forwards linear, textShadow 1.6s infinite 4s;
+}
+
+.crt-active .crt.scanlines::before {
+  background: rgba(0, 0, 0, 0.25);
+  animation: scan-moving 6s linear infinite;
+}
+
+.crt-active .crt.scanlines::after {
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(0, 0, 0, 0.25) 51%
+  );
+  background-size: 100% 0.4rem;
+  animation: scan-crt 1s steps(60) infinite;
 }
 
 /* ========================
@@ -183,9 +336,14 @@
    ======================== */
 
 body {
-  background-color: #000;
+  background-color: #c8b89a;
   color: #0f0;
-  font-family: 'Courier New', monospace;
+  font-family: 'VT323', 'Courier New', monospace;
+  /* Enhanced text shadow with chromatic aberration */
+  text-shadow:
+    0 0 0.08em rgba(255, 255, 255, 1),
+    -0.08em 0 0.08em rgba(0, 255, 255, 1),
+    0.08em 0 0.08em rgba(255, 0, 255, 1);
 }
 
 input[type="text"], input[type="url"], input[type="number"], textarea, button {
@@ -193,7 +351,7 @@ input[type="text"], input[type="url"], input[type="number"], textarea, button {
   color: #0f0;
   border: 1px solid #0f0;
   padding: 8px;
-  font-family: 'Courier New', monospace;
+  font-family: 'VT323', 'Courier New', monospace;
 }
 
 textarea {
@@ -211,17 +369,137 @@ input[type=number] {
 }
 
 /* ========================
+   CRT POWER SWITCH - ROUND BUTTON FROM EXAMPLE
+   ======================== */
+
+.crt-power-switch-container {
+  position: absolute !important;
+  top: 2rem !important;
+  right: 2rem !important;
+  z-index: 9999 !important;
+  display: flex;
+  flex-direction: column;
+  /* Posizionato in alto a destra nella cornice nera del monitor */
+  transform: none !important;
+  margin: 0 !important;
+  bottom: auto !important;
+  left: auto !important;
+}
+
+#crt-switch + .crt-switch-label {
+  position: relative;
+  display: inline-block;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  font-family: sans-serif;
+  font-size: 1rem;
+  font-weight: normal;
+  line-height: 1;
+  text-shadow: 0.1rem 0.1rem 0 rgba(255, 255, 255, 0.4);
+  color: #666;
+  cursor: pointer;
+  /* Colore e texture di un vecchio monitor CRT */
+  background: #c8b89a;
+  background-image: 
+    radial-gradient(circle at left top, #d4c5a9, #bca888),
+    repeating-linear-gradient(45deg, transparent, transparent 1px, rgba(0,0,0,0.03) 1px, rgba(0,0,0,0.03) 2px),
+    repeating-linear-gradient(-45deg, transparent, transparent 1px, rgba(255,255,255,0.02) 1px, rgba(255,255,255,0.02) 2px);
+  box-shadow:
+    -0.15rem -0.15rem 0 #d4c5a9,
+    0.15rem 0.15rem 0 #a89b7f,
+    0 0 0 0.2rem #8b7f68,
+    0.2rem 0.2rem 0.5rem rgba(0,0,0,0.3);
+}
+
+#crt-switch + .crt-switch-label:after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-5.5rem, -50%);
+  content: '';
+  display: block;
+  border-radius: 50%;
+  height: 0.6rem;
+  width: 0.6rem;
+  background: #660000;
+  border: 0.1rem solid #8b7f68;
+  box-shadow: inset 0 0 0.2rem rgba(0,0,0,0.3);
+}
+
+#crt-switch:checked + .crt-switch-label,
+#crt-switch:active + .crt-switch-label {
+  box-shadow:
+    -0.1rem -0.1rem 0 #a89b7f,
+    0.1rem 0.1rem 0 #d4c5a9,
+    0 0 0 0.2rem #8b7f68,
+    0.15rem 0.15rem 0.3rem rgba(0,0,0,0.4);
+}
+
+#crt-switch:checked + .crt-switch-label:after {
+  background: #33ff33;
+  box-shadow: 0 0 1.2rem 0 rgba(0, 255, 0, 1);
+}
+
+.switch-text {
+  position: absolute;
+  top: -2rem;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #c8b89a;
+  text-shadow: 0 0 3px rgba(200, 184, 154, 0.5);
+  font-weight: bold;
+  letter-spacing: 0.1rem;
+  font-family: 'VT323', 'Courier New', monospace;
+}
+
+/* Assicura che il bottone sia sempre visibile su tutti i dispositivi */
+@media (max-width: 768px) {
+  .crt-power-switch-container {
+    top: 1rem !important;
+    right: 1rem !important;
+    position: absolute !important;
+  }
+  
+  #crt-switch + .crt-switch-label {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  .switch-text {
+    top: -2.5rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* ========================
    ACCESSIBILITY
    ======================== */
 
 @media (prefers-reduced-motion: reduce) {
-  .crt,
-  .power-led,
-  .crt::after {
+  .crt-content,
+  .crt::after,
+  .cursor,
+  .crt.scanlines::before,
+  .crt.scanlines::after {
     animation: none !important;
   }
   
   .crt::before {
     opacity: 0.3;
+  }
+  
+  .crt-active .crt.scanlines::before {
+    background: rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .crt-active .crt.scanlines::after {
+    background: linear-gradient(
+      to bottom,
+      transparent 50%,
+      rgba(0, 0, 0, 0.1) 51%
+    ) !important;
   }
 }
