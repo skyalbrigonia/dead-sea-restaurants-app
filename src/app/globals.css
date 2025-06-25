@@ -82,12 +82,116 @@
   position: relative;
   width: 100%;
   height: 100%;
-  padding: 2rem;
+  /* Padding asimmetrico: meno a destra per avvicinare la scrollbar al contenuto */
+  padding: 2rem 1.2rem 2rem 2rem;
   background-color: inherit;
   box-sizing: border-box;
   /* Stabilizza layout durante l'hydration */
   overflow: auto;
   will-change: opacity, visibility; /* Ottimizza per animazioni */
+  
+  /* Scrollbar personalizzata per browser Webkit (Chrome, Safari, Edge) */
+  scrollbar-width: thin;
+  scrollbar-color: #0f0 #333;
+}
+
+/* Scrollbar personalizzata stile CRT/Terminale per Webkit - più vicina al terminale */
+.crt-content::-webkit-scrollbar {
+  width: 10px;
+  background: #333;
+  border-left: 1px solid #0f0;
+  /* Posiziona la scrollbar più internamente */
+  margin-right: 0.5rem;
+}
+
+.crt-content::-webkit-scrollbar-track {
+  background: #333;
+  border-left: 1px solid #0f0;
+  box-shadow: inset 0 0 3px rgba(0, 255, 0, 0.1);
+}
+
+.crt-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #0f0 0%, #0a0 50%, #0f0 100%);
+  border: 1px solid #0f0;
+  border-radius: 0;
+  box-shadow: 
+    inset 0 0 3px rgba(0, 255, 0, 0.3),
+    0 0 5px rgba(0, 255, 0, 0.2);
+  
+  /* Effetto ASCII/pixel art */
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1px,
+      rgba(0, 0, 0, 0.1) 1px,
+      rgba(0, 0, 0, 0.1) 2px
+    );
+}
+
+.crt-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #1f1 0%, #0f0 50%, #1f1 100%);
+  box-shadow: 
+    inset 0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 8px rgba(0, 255, 0, 0.4);
+}
+
+.crt-content::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #0a0 0%, #080 50%, #0a0 100%);
+}
+
+/* Corner quando ci sono sia scrollbar verticale che orizzontale */
+.crt-content::-webkit-scrollbar-corner {
+  background: #333;
+  border: 1px solid #0f0;
+}
+
+/* Effetti aggiuntivi quando il CRT è attivo */
+.crt-active .crt-content::-webkit-scrollbar-thumb {
+  animation: scrollbar-glow 2s ease-in-out infinite alternate;
+}
+
+.crt-active .crt-content::-webkit-scrollbar-track {
+  box-shadow: 
+    inset 0 0 3px rgba(0, 255, 0, 0.1),
+    inset 0 0 6px rgba(0, 255, 0, 0.05);
+}
+
+/* Animazione glow per la scrollbar quando il CRT è attivo */
+@keyframes scrollbar-glow {
+  0% {
+    box-shadow: 
+      inset 0 0 3px rgba(0, 255, 0, 0.3),
+      0 0 5px rgba(0, 255, 0, 0.2);
+  }
+  100% {
+    box-shadow: 
+      inset 0 0 5px rgba(0, 255, 0, 0.5),
+      0 0 8px rgba(0, 255, 0, 0.3);
+  }
+}
+
+/* Personalizzazione aggiuntiva per Firefox */
+.crt-content {
+  scrollbar-color: #0f0 #333;
+  scrollbar-width: thin;
+}
+
+/* Migliora la visibilità della scrollbar su schermi più piccoli */
+@media (max-width: 768px) {
+  .crt-content {
+    /* Padding ancora più ridotto su mobile per massimizzare lo spazio */
+    padding: 1.5rem 0.8rem 1.5rem 1.5rem;
+  }
+  
+  .crt-content::-webkit-scrollbar {
+    width: 7px;
+    margin-right: 0.3rem;
+  }
+  
+  .crt-content::-webkit-scrollbar-thumb {
+    border-radius: 2px;
+  }
 }
 
 /* Scanlines enhanced */
@@ -162,29 +266,29 @@
    EXACT ALEC LOWNES ANIMATIONS
    ======================== */
 
-/* Flicker animation - Exact copy */
+/* Flicker animation - Ultra ridotto per essere molto meno fastidioso */
 @keyframes flicker {
-  0% { opacity: 0.27861; }
-  5% { opacity: 0.34769; }
-  10% { opacity: 0.23604; }
-  15% { opacity: 0.90626; }
-  20% { opacity: 0.18128; }
-  25% { opacity: 0.83891; }
-  30% { opacity: 0.65583; }
-  35% { opacity: 0.67807; }
-  40% { opacity: 0.26559; }
-  45% { opacity: 0.84693; }
-  50% { opacity: 0.96019; }
-  55% { opacity: 0.08594; }
-  60% { opacity: 0.20313; }
-  65% { opacity: 0.71988; }
-  70% { opacity: 0.53455; }
-  75% { opacity: 0.37288; }
-  80% { opacity: 0.71428; }
-  85% { opacity: 0.70419; }
-  90% { opacity: 0.7003; }
-  95% { opacity: 0.36108; }
-  100% { opacity: 0.24387; }
+  0% { opacity: 0.92; }
+  5% { opacity: 0.94; }
+  10% { opacity: 0.91; }
+  15% { opacity: 0.96; }
+  20% { opacity: 0.90; }
+  25% { opacity: 0.95; }
+  30% { opacity: 0.93; }
+  35% { opacity: 0.94; }
+  40% { opacity: 0.92; }
+  45% { opacity: 0.96; }
+  50% { opacity: 0.98; }
+  55% { opacity: 0.89; }
+  60% { opacity: 0.91; }
+  65% { opacity: 0.95; }
+  70% { opacity: 0.93; }
+  75% { opacity: 0.92; }
+  80% { opacity: 0.95; }
+  85% { opacity: 0.94; }
+  90% { opacity: 0.93; }
+  95% { opacity: 0.92; }
+  100% { opacity: 0.91; }
 }
 
 /* Text shadow animation - Exact copy */
@@ -364,6 +468,17 @@
 .crt-off .crt-content {
   opacity: 0;
   visibility: hidden;
+  /* Nascondi scrollbar quando spento */
+  overflow: hidden;
+}
+
+/* Nascondi scrollbar durante l'inizializzazione */
+.crt-initializing .crt-content {
+  overflow: hidden !important;
+}
+
+.crt-initializing .crt-content::-webkit-scrollbar {
+  display: none;
 }
 
 .crt::before {
@@ -395,7 +510,7 @@
 }
 
 .crt-active .crt::after {
-  animation: flicker 0.15s infinite;
+  animation: flicker 2.5s infinite;
   /* Reset del punto luminoso quando il CRT è attivo */
   content: '';
   width: auto;
@@ -410,7 +525,7 @@
 
 /* Sovrascrivi l'animazione di spegnimento quando il CRT è attivo */
 .crt-active .crt-content {
-  animation: crt-power-on 4s forwards linear, textShadow 1.6s infinite 4s;
+  animation: crt-power-on 4s forwards linear; /* textShadow 1.6s infinite 4s; */ /* TEXTSHA­DOW TEMPORANEAMENTE DISABILITATO */
 }
 
 .crt-active .crt.scanlines::before {
